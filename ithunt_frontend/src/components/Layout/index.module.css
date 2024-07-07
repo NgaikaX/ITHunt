@@ -1,0 +1,24 @@
+.header {
+  background-color: #fff;
+  font-size: 25px;
+  font-weight: bold;
+}
+.user {
+  float: right;
+  font-size: 15px;
+  font-weight: normal;
+}
+.sectionInner {
+  height: calc(100vh - 64px);
+}
+.sectionContent {
+  padding: 32px;
+}
+.content {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 24px;
+}
+.selectBar {
+  width: 150px;
+}
