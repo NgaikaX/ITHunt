@@ -1,0 +1,7 @@
+.tableWrap {
+  overflow: auto;
+  height: calc(100% - 80px);
+}
+.addbtn {
+  float: right;
+}

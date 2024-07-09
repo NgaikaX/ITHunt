@@ -1,7 +1,20 @@
 .tableWrap {
   overflow: auto;
-  height: calc(100% - 80px);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 .addbtn {
   float: right;
+}
+.cardtype {
+  width: 215px;
+  height: 350px;
+  overflow: hidden;
+}
+.covertype {
+  width: 215px;
+  height: 215px;
 }

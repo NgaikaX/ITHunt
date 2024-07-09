@@ -1,3 +1,3 @@
 export default function Home() {
-  return <>Course</>;
+  return <>Edit Question</>;
 }

@@ -1,12 +1,13 @@
-import { CourseQueryType } from "@/type";
-import axios from "axios";
+import request from "./../utils/request";
+import { CourseQueryType, CourseType, FeedbackQueryType } from "./../type";
 import qs from "qs";
 
 export async function getCourseList(params?: CourseQueryType) {
-  const res = await axios(
-    `http://127.0.0.1:4523/m1/4782268-4436149-default/api/courses?${qs.stringify(
-      params
-    )}`
-  );
-  return res.data;
+  return request.get(`/api/courses?${qs.stringify(params)}`);
+}
+export async function courseAdd(params: CourseType) {
+  return request.post("/api/courses", params);
+}
+export async function getFeedbackList(params?: FeedbackQueryType) {
+  return request.get(`/api/feedback?${qs.stringify(params)}`);
 }

@@ -1,10 +1,39 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import React, { useEffect, useState } from "react";
+import type { CollapseProps, TablePaginationConfig } from "antd";
+import { Collapse, Form, Table } from "antd";
+import { getVocabularyList } from "@/api";
+import styles from "./index.module.css";
+import { VocabularyType } from "@/type/glossary";
 
 export default function Home() {
-  return <>Glossary</>;
+  useEffect(() => {
+    (async function () {
+      getVocabularyList().then((res) => {
+        console.log(
+          "%c[res]-21",
+          "font-size:13px; background:pink; color:#000",
+          res
+        );
+        setItemsList(res.data);
+      });
+    })();
+  }, []);
+
+  const [itemsList, setItemsList] = useState<VocabularyType[]>([]);
+
+  const items: CollapseProps["items"] = itemsList.map((item, index) => ({
+    key: String(index),
+    label: item.vocabulary,
+    children: <p>{item.explanation}</p>,
+  }));
+
+  return (
+    <>
+      <Form className={styles.tableWrap}>
+        <div>
+          <Collapse accordion items={items} />
+        </div>
+      </Form>
+    </>
+  );
 }

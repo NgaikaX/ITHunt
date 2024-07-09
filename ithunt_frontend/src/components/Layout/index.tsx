@@ -1,44 +1,12 @@
 import React, { ReactNode } from "react";
-import {
-  LaptopOutlined,
-  NotificationOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Breadcrumb, Layout as Antdlayout, Menu, Dropdown, Space } from "antd";
+import { Layout as Antdlayout, Menu, Dropdown, Space, message } from "antd";
 import styles from "./index.module.css";
 import { useRouter } from "next/router";
 import { DownOutlined } from "@ant-design/icons";
 import Head from "next/head";
 
 const { Header, Content, Sider } = Antdlayout;
-
-const items1: MenuProps["items"] = ["1", "2", "3"].map((key) => ({
-  key,
-  label: `nav ${key}`,
-}));
-
-const items2: MenuProps["items"] = [
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-].map((icon, index) => {
-  const key = String(index + 1);
-
-  return {
-    key: `sub${key}`,
-    icon: React.createElement(icon),
-    label: `subnav ${key}`,
-
-    children: new Array(4).fill(null).map((_, j) => {
-      const subKey = index * 4 + j + 1;
-      return {
-        key: subKey,
-        label: `option${subKey}`,
-      };
-    }),
-  };
-});
 
 const ITEMS = [
   {
@@ -48,14 +16,32 @@ const ITEMS = [
   {
     key: "glossary",
     label: "Glossary",
+
+    children: [
+      { key: "/glossary", label: "Glossary" },
+      { key: "/glossary/list", label: "Glossary List" },
+    ],
+  },
+  {
+    key: "course",
+    label: "Learning in MSC IT+",
+
+    children: [
+      { key: "/course", label: "Course" },
+      { key: "/course/list", label: "Course List" },
+      { key: "/course/feedback", label: "Course Feedback" },
+    ],
   },
   {
     key: "selflearning",
     label: "Self-learning Hub",
-  },
-  {
-    key: "mscit",
-    label: "Learning in MSC IT+",
+
+    children: [
+      { key: "/selflearning", label: "Course" },
+      { key: "/selflearning/quiz", label: "Quiz" },
+      { key: "/selflearning/courselist", label: "Course List" },
+      { key: "/selflearning/questionlist", label: "Questions List" },
+    ],
   },
 
   {
@@ -67,37 +53,15 @@ const ITEMS = [
     label: "Postgraduate-level Support",
   },
   {
-    key: "usermgmt",
-    label: "User Management",
-  },
-  {
-    key: "glossarymgmt",
-    label: "Glossary Management",
-  },
-  {
-    key: "course",
-    label: "MSc IT+ Management",
-    children: [
-      { key: "/course", label: "Course" },
-      { key: "/course/feedback", label: "Course Feedback" },
-    ],
-  },
-  {
-    key: "selflearningmgmt",
-    label: "Self-learning Management",
-
-    children: [{ key: "/selflearningmgmt", label: "Video Management" }],
+    key: "user",
+    label: "Users",
   },
 ];
 
-const onClick: MenuProps["onClick"] = ({ key }) => {
-  message.info(`Click on item ${key}`);
-};
-
 const USER_ITEMS: MenuProps["items"] = [
   {
-    label: "Message",
-    key: "message",
+    label: "Notification",
+    key: "/dashboard/notification",
   },
   {
     label: "Log out",
@@ -110,6 +74,13 @@ export function Layout({ children }: { children: ReactNode }) {
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     router.push(key);
   };
+
+  const onClick: MenuProps["onClick"] = ({ key }) => {
+    message.info(`Click on item ${key}`);
+    router.push(key);
+  };
+
+  const activeMenu = router.pathname;
   return (
     <>
       <Head>
@@ -139,6 +110,7 @@ export function Layout({ children }: { children: ReactNode }) {
                 mode="inline"
                 defaultSelectedKeys={["/dashboard"]}
                 defaultOpenKeys={["dashboard"]}
+                selectedKeys={[activeMenu]}
                 style={{ height: "100%", borderRight: 0 }}
                 items={ITEMS}
                 onClick={handleMenuClick}

@@ -11,27 +11,21 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
-import { getFeedbackList } from "@/api/course";
-import { FeedbackQueryType } from "@/type";
 import router from "next/router";
+import { VocabularyQueryType } from "@/type/glossary";
+import { getVocabularyList } from "@/api/glossary";
 
 const COLUMNS = [
   {
-    title: "Course Name",
-    dataIndex: "coursename",
-    key: "coursename",
+    title: "Vocabulary",
+    dataIndex: "vocabulary",
+    key: "vocabulary",
     width: 250,
   },
   {
-    title: "User ID",
-    dataIndex: "userid",
-    key: "userid",
-    width: 150,
-  },
-  {
-    title: "Feedback",
-    dataIndex: "feedback",
-    key: "feedback",
+    title: "Explanation",
+    dataIndex: "explanation",
+    key: "explaination",
     ellipsis: true,
     width: 400,
     render: (text: string) => {
@@ -52,13 +46,8 @@ const COLUMNS = [
 
 export default function Home() {
   const [form] = Form.useForm();
-  const handleSearchFinish = async (values: FeedbackQueryType) => {
-    /*console.log(
-      "%c[values]-21",
-      "font-size:13px; background:pink; color:#000",
-      values
-    );*/
-    const res = await getFeedbackList({
+  const handleSearchFinish = async (values: VocabularyQueryType) => {
+    const res = await getVocabularyList({
       ...values,
       current: 1,
       pageSize: pagination.pageSize,
@@ -73,13 +62,18 @@ export default function Home() {
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
     const query = form.getFieldsValue();
-    getFeedbackList({
+    getVocabularyList({
       current: pagination.current,
       pageSize: pagination.pageSize,
       ...query,
     });
   };
-
+  const handleVocabularyAdd = () => {
+    router.push("/glossary/add");
+  };
+  const handleVocabularyEdit = () => {
+    router.push("/glossary/edit/id");
+  };
   const columns = [
     ...COLUMNS,
     {
@@ -90,6 +84,9 @@ export default function Home() {
           <Space>
             <Button type="link" danger>
               Delete
+            </Button>
+            <Button type="link" onClick={handleVocabularyEdit}>
+              Edit
             </Button>
           </Space>
         );
@@ -107,7 +104,7 @@ export default function Home() {
   const [data, setData] = useState([]);
   useEffect(() => {
     async function fetchData() {
-      const res = await getFeedbackList({
+      const res = await getVocabularyList({
         current: 1,
         pageSize: pagination.pageSize,
       });
@@ -124,13 +121,13 @@ export default function Home() {
         form={form}
         onFinish={handleSearchFinish}
         initialValues={{
-          coursename: "",
+          vocabulary: "",
         }}
       >
         <Row gutter={24}>
           <Col span={8}>
-            <Form.Item name="coursename" label="Course">
-              <Input placeholder="Enter a course name" allowClear />
+            <Form.Item name="vocabulary" label="Vocabulary">
+              <Input placeholder="Enter a vocabulary" allowClear />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -143,6 +140,17 @@ export default function Home() {
                   Clear
                 </Button>
               </Space>
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item>
+              <Button
+                type="link"
+                className={styles.addbtn}
+                onClick={handleVocabularyAdd}
+              >
+                Add a vocabulary
+              </Button>
             </Form.Item>
           </Col>
         </Row>

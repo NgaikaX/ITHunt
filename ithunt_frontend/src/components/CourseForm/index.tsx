@@ -1,22 +1,90 @@
 import React, { useState } from "react";
-import { Button, Form, Image, Input, Space } from "antd";
+import {
+  Button,
+  Form,
+  GetProp,
+  Image,
+  Input,
+  Space,
+  Upload,
+  UploadProps,
+  message,
+} from "antd";
 import styles from "./index.module.css";
+import { courseAdd } from "@/api/course";
+import { CourseType } from "@/type";
+import { useRouter } from "next/router";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+
 const { TextArea } = Input;
-
-const normFile = (e: any) => {
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e?.fileList;
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+const getBase64 = (img: FileType, callback: (url: string) => void) => {
+  const reader = new FileReader();
+  reader.addEventListener("load", () => callback(reader.result as string));
+  reader.readAsDataURL(img);
 };
-
-const handleFinish = (values) => {
-  courseAdd(values);
+const beforeUpload = (file: FileType) => {
+  const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+  if (!isJpgOrPng) {
+    message.error("You can only upload JPG/PNG file!");
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error("Image must smaller than 2MB!");
+  }
+  return isJpgOrPng && isLt2M;
 };
 
 export default function CourseForm() {
   const [form] = Form.useForm();
-  const [preview, setPreview] = useState("");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>();
+
+  const handleFinish = async (values: CourseType) => {
+    console.log(
+      "%c[values]-21",
+      "font-size:13px; background:pink; color:#000",
+      values
+    );
+    await courseAdd(values);
+    message.success("Create Sucessfully");
+    router.push("/course/list");
+  };
+  const handleCancel = () => {
+    router.push("/course/list");
+  };
+
+  const handleChange: UploadProps["onChange"] = (info) => {
+    console.log(info);
+
+    if (info.file.status === "uploading") {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === "done") {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj as FileType, (url) => {
+        setLoading(false);
+        setImageUrl(url);
+      });
+    }
+  };
+  const uploadButton = (
+    <button
+      style={{
+        border: 0,
+        background: "none",
+        color: "black",
+        fontSize: "14px",
+      }}
+      type="button"
+    >
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8, color: "black" }}>Upload</div>
+    </button>
+  );
+
   return (
     <>
       <Form
@@ -24,7 +92,6 @@ export default function CourseForm() {
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 14 }}
         layout="horizontal"
-        style={{ maxWidth: 600 }}
         onFinish={handleFinish}
       >
         <Form.Item
@@ -48,36 +115,31 @@ export default function CourseForm() {
         >
           <TextArea rows={15} placeholder="Enter the description" />
         </Form.Item>
-        <Form.Item label="Cover" name="cover">
-          <Input.Group compact>
-            <Input
-              placeholder="Enter the url"
-              style={{ width: "calc(100% - 90px)" }}
-              onChange={(e) => {
-                form.setFieldValue("cover", e.target.value);
-              }}
-            />
-            <Button
-              type="primary"
-              onClick={(e) => {
-                setPreview(form.getFieldValue("cover"));
-              }}
+        <Form.Item label="Cover" name="cover" rules={[{ required: true }]}>
+          <Space direction="vertical" style={{ width: "100%" }} size="large">
+            <Upload
+              name="cover"
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              maxCount={1}
+              beforeUpload={beforeUpload}
+              onChange={handleChange}
             >
-              Preview
-            </Button>
-          </Input.Group>
-          {preview && (
-            <Form.Item label="" colon={false} className={styles.preview}>
-              <Image src={preview} width={100} height={100} alr="" />
-            </Form.Item>
-          )}
+              {imageUrl ? (
+                <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+              ) : (
+                uploadButton
+              )}
+            </Upload>
+          </Space>
         </Form.Item>
-        <Form.Item label="" colon={false}>
+        <Form.Item label=" " colon={false}>
           <Space>
             <Button type="primary" htmlType="submit">
               Finish
             </Button>
-            <Button>Cancel</Button>
+            <Button onClick={handleCancel}>Cancel</Button>
           </Space>
         </Form.Item>
       </Form>
