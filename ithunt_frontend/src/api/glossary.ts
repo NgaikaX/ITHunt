@@ -9,3 +9,7 @@ export async function getVocabularyList(params?: VocabularyQueryType) {
 export async function vocabularyAdd(params: VocabularyType) {
   return request.post("/api/glossary", params);
 }
+
+export async function vocabularyDeleted(id: string) {
+  return request.delete(`/api/glossary/${id}`);
+}

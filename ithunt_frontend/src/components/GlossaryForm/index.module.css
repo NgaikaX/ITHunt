@@ -1,0 +1,9 @@
+.preview {
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+.publishquill {
+  .ql-editor {
+    min-height: 600px;
+  }
+}

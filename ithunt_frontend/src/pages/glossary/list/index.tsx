@@ -8,12 +8,14 @@ import {
   Table,
   TablePaginationConfig,
   Tooltip,
+  message,
 } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
 import router from "next/router";
 import { VocabularyQueryType } from "@/type/glossary";
-import { getVocabularyList } from "@/api/glossary";
+import { getVocabularyList, vocabularyDeleted } from "@/api/glossary";
+import { log } from "console";
 
 const COLUMNS = [
   {
@@ -46,6 +48,16 @@ const COLUMNS = [
 
 export default function Home() {
   const [form] = Form.useForm();
+  async function fetchData(search?: VocabularyQueryType) {
+    const res = await getVocabularyList({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      ...search,
+    });
+    const { data } = res;
+    setData(data);
+    setPagination({ ...pagination, current: 1, total: res.total });
+  }
   const handleSearchFinish = async (values: VocabularyQueryType) => {
     const res = await getVocabularyList({
       ...values,
@@ -71,8 +83,14 @@ export default function Home() {
   const handleVocabularyAdd = () => {
     router.push("/glossary/add");
   };
-  const handleVocabularyEdit = () => {
-    router.push("/glossary/edit/id");
+  const handleVocabularyEdit = (id: string) => {
+    router.push(`/glossary/edit/${id}`);
+  };
+  const handleVocabularyDelete = async (id: string) => {
+    console.log(id);
+    await vocabularyDeleted(id);
+    message.success("Delete Sucessfully");
+    fetchData(form.getFieldsValue());
   };
   const columns = [
     ...COLUMNS,
@@ -82,10 +100,21 @@ export default function Home() {
       render: (_: any, row: any) => {
         return (
           <Space>
-            <Button type="link" danger>
+            <Button
+              type="link"
+              danger
+              onClick={() => {
+                handleVocabularyDelete(row.id);
+              }}
+            >
               Delete
             </Button>
-            <Button type="link" onClick={handleVocabularyEdit}>
+            <Button
+              type="link"
+              onClick={() => {
+                handleVocabularyEdit(row.id);
+              }}
+            >
               Edit
             </Button>
           </Space>
@@ -103,14 +132,6 @@ export default function Home() {
 
   const [data, setData] = useState([]);
   useEffect(() => {
-    async function fetchData() {
-      const res = await getVocabularyList({
-        current: 1,
-        pageSize: pagination.pageSize,
-      });
-      const { data } = res;
-      setData(data);
-    }
     fetchData();
   }, []);
 

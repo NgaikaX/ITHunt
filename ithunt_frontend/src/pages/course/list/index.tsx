@@ -10,10 +10,11 @@ import {
   Table,
   TablePaginationConfig,
   Tooltip,
+  message,
 } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
-import { getCourseList } from "@/api/course";
+import { courseDelete, getCourseList } from "@/api/course";
 import { CourseQueryType } from "@/type";
 import router from "next/router";
 
@@ -57,6 +58,16 @@ const COLUMNS = [
 
 export default function Home() {
   const [form] = Form.useForm();
+  async function fetchData(search?: CourseQueryType) {
+    const res = await getCourseList({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      ...search,
+    });
+    const { data } = res;
+    setData(data);
+    setPagination({ ...pagination, total: res.total });
+  }
   const handleSearchFinish = async (values: CourseQueryType) => {
     const res = await getCourseList({
       ...values,
@@ -67,7 +78,7 @@ export default function Home() {
     setPagination({ ...pagination, current: 1, total: res.total });
   };
   const handleSearchReset = () => {
-    console.log(form);
+    //console.log(form);
     form.resetFields();
   };
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -82,8 +93,14 @@ export default function Home() {
   const handleCourseAdd = () => {
     router.push("/course/add");
   };
-  const handleCourseEdit = () => {
-    router.push("/course/edit/id");
+  const handleCourseEdit = (id: string) => {
+    router.push(`/course/edit/${id}`);
+  };
+  const handleCourseDelete = async (id: string) => {
+    //console.log(id);
+    await courseDelete(id);
+    message.success("Delete Sucessfully");
+    fetchData(form.getFieldsValue());
   };
   const columns = [
     ...COLUMNS,
@@ -91,12 +108,24 @@ export default function Home() {
       title: "Operation",
       key: "operation",
       render: (_: any, row: any) => {
+        //console.log(row);
         return (
           <Space>
-            <Button type="link" danger>
+            <Button
+              type="link"
+              danger
+              onClick={() => {
+                handleCourseDelete(row.id);
+              }}
+            >
               Delete
             </Button>
-            <Button type="link" onClick={handleCourseEdit}>
+            <Button
+              type="link"
+              onClick={() => {
+                handleCourseEdit(row.id);
+              }}
+            >
               Edit
             </Button>
           </Space>
@@ -114,14 +143,6 @@ export default function Home() {
 
   const [data, setData] = useState([]);
   useEffect(() => {
-    async function fetchData() {
-      const res = await getCourseList({
-        current: 1,
-        pageSize: pagination.pageSize,
-      });
-      const { data } = res;
-      setData(data);
-    }
     fetchData();
   }, []);
 

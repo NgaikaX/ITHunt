@@ -1,24 +1,17 @@
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { Layout } from "@/components/Layout";
 import "@/styles/globals.css";
-import { Component } from "react";
 import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <ClerkProvider>
-      <SignedOut>
-        <SignInButton />
-      </SignedOut>
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
+  const router = useRouter();
+  console.log(router);
+
+  return router.pathname === "/login" ? (
+    <Component {...pageProps} />
+  ) : (
+    <Layout>
       <Component {...pageProps} />
-    </ClerkProvider>
+    </Layout>
   );
 }

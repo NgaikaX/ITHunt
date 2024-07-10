@@ -11,3 +11,7 @@ export async function courseAdd(params: CourseType) {
 export async function getFeedbackList(params?: FeedbackQueryType) {
   return request.get(`/api/feedback?${qs.stringify(params)}`);
 }
+
+export async function courseDelete(id: string) {
+  return request.delete(`/api/courses/${id}`);
+}
