@@ -1,4 +1,4 @@
-import { VocabularyQueryType, VocabularyType } from "@/type/glossary";
+import { VocabularyQueryType, VocabularyType } from "../type";
 import request from "./../utils/request";
 import qs from "qs";
 

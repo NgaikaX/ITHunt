@@ -53,7 +53,7 @@ const ITEMS = [
     label: "Postgraduate-level Support",
   },
   {
-    key: "user",
+    key: "users",
     label: "Users",
   },
 ];
