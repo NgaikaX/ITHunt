@@ -5,6 +5,7 @@ import styles from "./index.module.css";
 import { useRouter } from "next/router";
 import { DownOutlined } from "@ant-design/icons";
 import Head from "next/head";
+import { UserButton } from "@clerk/nextjs";
 
 const { Header, Content, Sider } = Antdlayout;
 
@@ -94,6 +95,7 @@ export function Layout({ children }: { children: ReactNode }) {
           <Header className={styles.header}>
             ITHunt
             <span className={styles.user}>
+              <UserButton />
               <Dropdown menu={{ items: USER_ITEMS, onClick }}>
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
