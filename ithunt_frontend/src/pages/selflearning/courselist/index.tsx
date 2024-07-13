@@ -5,7 +5,6 @@ import {
   Image,
   Input,
   Row,
-  Select,
   Space,
   Table,
   TablePaginationConfig,
@@ -17,13 +16,14 @@ import styles from "./index.module.css";
 import { courseDelete, getCourseList } from "@/api/course";
 import { CourseQueryType } from "@/type";
 import router from "next/router";
+import { getSl_CourseList, slCourseDelete } from "@/api";
 
 const COLUMNS = [
   {
     title: "Course Name",
     dataIndex: "coursename",
     key: "coursename",
-    width: 250,
+    width: 150,
   },
   {
     title: "Cover",
@@ -35,11 +35,17 @@ const COLUMNS = [
     width: 150,
   },
   {
+    title: "Video Url",
+    dataIndex: "videourl",
+    key: "videourl",
+    width: 200,
+  },
+  {
     title: "Description",
     dataIndex: "description",
     key: "description",
     ellipsis: true,
-    width: 400,
+    width: 300,
     render: (text: string) => {
       return (
         <Tooltip title={text} placement="topLeft">
@@ -59,7 +65,7 @@ const COLUMNS = [
 export default function Home() {
   const [form] = Form.useForm();
   async function fetchData(search?: CourseQueryType) {
-    const res = await getCourseList({
+    const res = await getSl_CourseList({
       current: pagination.current,
       pageSize: pagination.pageSize,
       ...search,
@@ -69,7 +75,7 @@ export default function Home() {
     setPagination({ ...pagination, total: res.total });
   }
   const handleSearchFinish = async (values: CourseQueryType) => {
-    const res = await getCourseList({
+    const res = await getSl_CourseList({
       ...values,
       current: 1,
       pageSize: pagination.pageSize,
@@ -84,21 +90,21 @@ export default function Home() {
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination(pagination);
     const query = form.getFieldsValue();
-    getCourseList({
+    getSl_CourseList({
       current: pagination.current,
       pageSize: pagination.pageSize,
       ...query,
     });
   };
   const handleCourseAdd = () => {
-    router.push("/course/add");
+    router.push("/selflearning/addcourse");
   };
   const handleCourseEdit = (id: string) => {
-    router.push(`/course/edit/${id}`);
+    router.push(`/selflearning/editcourse/${id}`);
   };
   const handleCourseDelete = async (id: string) => {
     //console.log(id);
-    await courseDelete(id);
+    await slCourseDelete(id);
     message.success("Delete Sucessfully");
     fetchData(form.getFieldsValue());
   };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Form,
@@ -10,20 +10,26 @@ import {
   UploadProps,
   message,
 } from "antd";
-import styles from "./index.module.css";
-import { courseAdd } from "@/api/course";
-import { CourseType } from "@/type";
+import { Sl_CourseType } from "@/type";
 import { useRouter } from "next/router";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  LoadingOutlined,
+  PlusOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import { slCourseAdd, slCourseUpdate } from "@/api";
+import styles from "./index.module.css";
 
 const { TextArea } = Input;
+
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
 const getBase64 = (img: FileType, callback: (url: string) => void) => {
   const reader = new FileReader();
   reader.addEventListener("load", () => callback(reader.result as string));
   reader.readAsDataURL(img);
 };
-const beforeUpload = (file: FileType) => {
+const beforeUploadImg = (file: FileType) => {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
   if (!isJpgOrPng) {
     message.error("You can only upload JPG/PNG file!");
@@ -35,27 +41,59 @@ const beforeUpload = (file: FileType) => {
   return isJpgOrPng && isLt2M;
 };
 
-export default function CourseForm() {
+const beforeUploadVideo = (file: FileType) => {
+  const isMp4 = file.type === "video/mp4";
+  if (!isMp4) {
+    message.error("You can only upload JPG/PNG file!");
+  }
+  return isMp4;
+};
+
+export default function CourseForm({
+  editData = {
+    coursename: "",
+  },
+}: {
+  editData?: Partial<Sl_CourseType>;
+}) {
   const [form] = Form.useForm();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
+  const [videoUrl, setVideoUrl] = useState<string>();
 
-  const handleFinish = async (values: CourseType) => {
+  useEffect(() => {
+    if (editData.id) {
+      form.setFieldsValue(editData);
+      if (editData.cover) {
+        setImageUrl(editData.cover); // Assuming editData.cover is base64 or URL of the image
+      }
+      if (editData.videourl) {
+        setVideoUrl(editData.videourl); // Assuming editData.video is URL of the video
+      }
+    }
+    console.log("Edit data set in form:", editData);
+  }, [editData, form]);
+
+  const handleFinish = async (values: Sl_CourseType) => {
     console.log(
       "%c[values]-21",
       "font-size:13px; background:pink; color:#000",
       values
     );
-    await courseAdd(values);
+    if (editData.id) {
+      await slCourseUpdate(values);
+    } else {
+      await slCourseAdd(values);
+    }
     message.success("Create Sucessfully");
-    router.push("/course/list");
+    router.push("/selflearning/courselist");
   };
   const handleCancel = () => {
-    router.push("/course/list");
+    router.push("/selflearning/courselist");
   };
 
-  const handleChange: UploadProps["onChange"] = (info) => {
+  const handleImgChange: UploadProps["onChange"] = (info) => {
     console.log(info);
 
     if (info.file.status === "uploading") {
@@ -70,16 +108,25 @@ export default function CourseForm() {
       });
     }
   };
+
+  const handleVideoChange: UploadProps["onChange"] = (info) => {
+    console.log(info);
+
+    if (info.file.status === "uploading") {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === "done") {
+      // Get this url from response in real world.
+      const videoFile = info.file.originFileObj as FileType;
+      const videoURL = URL.createObjectURL(videoFile);
+      setLoading(false);
+      setVideoUrl(videoURL);
+    }
+  };
+
   const uploadButton = (
-    <button
-      style={{
-        border: 0,
-        background: "none",
-        color: "black",
-        fontSize: "14px",
-      }}
-      type="button"
-    >
+    <button className={styles.uploadbtn} type="button">
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
       <div style={{ marginTop: 8, color: "black" }}>Upload</div>
     </button>
@@ -93,6 +140,7 @@ export default function CourseForm() {
         wrapperCol={{ span: 14 }}
         layout="horizontal"
         onFinish={handleFinish}
+        initialValues={editData}
         className={styles.formWrap}
       >
         <Form.Item
@@ -103,28 +151,41 @@ export default function CourseForm() {
           <Input placeholder="Enter a course name" />
         </Form.Item>
         <Form.Item
-          label="Lecturer"
-          name="lecturer"
-          rules={[{ required: true }]}
-        >
-          <Input placeholder="Enter the lecturer" />
-        </Form.Item>
-        <Form.Item
           label="Description"
           name="description"
           rules={[{ required: true }]}
         >
-          <TextArea rows={15} placeholder="Enter the description" />
+          <TextArea rows={8} placeholder="Enter the description" />
+        </Form.Item>
+        <Form.Item label="Video" name="video">
+          <Space direction="vertical" style={{ width: "100%" }} size="large">
+            {videoUrl ? (
+              <video
+                src={videoUrl}
+                controls
+                style={{ width: "100%", height: "auto" }}
+              />
+            ) : null}
+            <Upload
+              listType="picture"
+              maxCount={1}
+              beforeUpload={beforeUploadVideo}
+              onChange={handleVideoChange}
+            >
+              <Button icon={<UploadOutlined />}>Upload (Max: 1)</Button>
+            </Upload>
+          </Space>
         </Form.Item>
         <Form.Item label="Cover" name="cover" rules={[{ required: true }]}>
           <Space direction="vertical" style={{ width: "100%" }} size="large">
             <Upload
-              name="avatar"
+              name="cover"
               listType="picture-card"
               className="avatar-uploader"
               showUploadList={false}
-              beforeUpload={beforeUpload}
-              onChange={handleChange}
+              maxCount={1}
+              beforeUpload={beforeUploadImg}
+              onChange={handleImgChange}
             >
               {imageUrl ? (
                 <img src={imageUrl} alt="cover" className={styles.cover} />
