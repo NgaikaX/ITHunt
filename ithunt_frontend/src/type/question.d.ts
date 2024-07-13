@@ -13,4 +13,5 @@ export interface QuestionType {
   content: string;
   answer: string;
   id?: string;
+  options: string[];
 }

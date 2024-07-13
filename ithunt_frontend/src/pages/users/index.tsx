@@ -111,7 +111,7 @@ export default function Home() {
     router.push(`/users/edit/${id}`);
   };
   const handleUserDelete = async (id: string) => {
-    //console.log(id);
+    console.log(id);
     await userDelete(id);
     message.success("Delete Sucessfully");
     fetchData(form.getFieldsValue());

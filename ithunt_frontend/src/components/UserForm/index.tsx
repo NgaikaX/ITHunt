@@ -6,7 +6,7 @@ import { userAdd, userUpdate } from "@/api";
 import { USER_ROLE, USER_STATUS } from "@/constants";
 import { useEffect } from "react";
 
-export default function UserForm({
+export default function QuestionForm({
   editData = {
     status: USER_STATUS.ON,
     role: USER_ROLE.STU,
@@ -17,7 +17,7 @@ export default function UserForm({
   const [form] = Form.useForm();
   const router = useRouter();
 
-  console.log("Initial values passed to the component:", editData);
+  //console.log("Initial values passed to the component:", editData);
 
   useEffect(() => {
     if (editData.id) {

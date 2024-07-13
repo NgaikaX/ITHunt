@@ -8,65 +8,67 @@ import {
   Space,
   Table,
   TablePaginationConfig,
-  Tag,
-  Tooltip,
   message,
 } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
 import router from "next/router";
-import { log } from "console";
-import {
-  getQuestionList,
-  getUserList,
-  questionDelete,
-  userDelete,
-} from "@/api";
+import { getQuestionList, getUserList, questionDelete } from "@/api";
 import { QUESTION_TYPE } from "@/constants";
-import { QuestionQueryType } from "@/type/question.d ";
-
-const COLUMNS = [
-  {
-    title: "No.",
-    dataIndex: "num",
-    key: "num",
-    width: 100,
-  },
-  {
-    title: "Question Type",
-    dataIndex: "type",
-    key: "type",
-    width: 200,
-  },
-  {
-    title: "Course Name",
-    dataIndex: "coursename",
-    key: "coursename",
-    width: 200,
-  },
-  {
-    title: "Question content",
-    dataIndex: "content",
-    key: "content",
-    width: 200,
-  },
-  {
-    title: "Correct Answer",
-    dataIndex: "answer",
-    key: "answer",
-    width: 200,
-  },
-  {
-    title: "Update Date",
-    dataIndex: "uploaddate",
-    key: "uploaddate",
-    width: 200,
-  },
-];
+import { QuestionQueryType } from "@/type/question";
 
 export default function Home() {
   const Option = Select.Option;
   const [form] = Form.useForm();
+  const numberToLetter = (num: number) => String.fromCharCode(65 + num);
+
+  const COLUMNS = [
+    {
+      title: "No.",
+      dataIndex: "num",
+      key: "num",
+      width: 100,
+    },
+    {
+      title: "Question Type",
+      dataIndex: "type",
+      key: "type",
+      width: 200,
+    },
+    {
+      title: "Course Name",
+      dataIndex: "coursename",
+      key: "coursename",
+      width: 200,
+    },
+    {
+      title: "Question content",
+      dataIndex: "content",
+      key: "content",
+      width: 200,
+    },
+    {
+      title: "Correct Answer",
+      dataIndex: "answer",
+      key: "answer",
+      width: 200,
+      render: (text: string, record: any) => {
+        if (record.type === QUESTION_TYPE.MUL) {
+          const index = parseInt(text, 10);
+          if (!isNaN(index)) {
+            return numberToLetter(index);
+          }
+        }
+        return text;
+      },
+    },
+    {
+      title: "Update Date",
+      dataIndex: "uploaddate",
+      key: "uploaddate",
+      width: 200,
+    },
+  ];
 
   async function fetchData(value?: any) {
     const res = await getQuestionList({
@@ -75,11 +77,11 @@ export default function Home() {
       ...value,
     });
     const { data } = res;
-    console.log(
+    /*console.log(
       "%c[res]-21",
       "font-size:13px; background:pink; color:#000",
       res
-    );
+    );*/
     setData(data);
     setPagination({ ...pagination, current: 1, total: res.total });
   }
@@ -117,13 +119,14 @@ export default function Home() {
     });
   };
   const handleQuestionAdd = () => {
-    router.push("/question/add");
+    router.push("/selflearning/addquestion");
   };
   const handleQuestionEdit = (id: string) => {
-    router.push(`/question/edit/${id}`);
+    console.log(id);
+    router.push(`/selflearning/editquestion/${id}`);
   };
   const handleQuestionDelete = async (id: string) => {
-    //console.log(id);
+    console.log(id);
     await questionDelete(id);
     message.success("Delete Sucessfully");
     fetchData(form.getFieldsValue());
@@ -134,6 +137,7 @@ export default function Home() {
       title: "Operation",
       key: "operation",
       render: (_: any, row: any) => {
+        //console.log(row);
         return (
           <Space>
             <Button

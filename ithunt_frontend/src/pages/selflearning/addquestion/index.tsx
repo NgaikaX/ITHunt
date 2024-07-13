@@ -1,3 +1,5 @@
+import QuestionForm from "@/components/QuestionForm";
+
 export default function Home() {
-  return <>Add Question</>;
+  return <QuestionForm />;
 }

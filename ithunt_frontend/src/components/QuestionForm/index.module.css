@@ -1,0 +1,27 @@
+.preview {
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+.mul_op {
+  width: 100%;
+  align-items: start;
+}
+
+.mul_ip {
+  width: 630px;
+}
+
+.mul_add {
+  width: 100%;
+}
+
+.mul_minus {
+  color: red;
+  margin-top: 3px;
+}
+
+.formWrap {
+  overflow: auto;
+  height: calc(100% - 80px);
+}
