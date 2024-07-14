@@ -1,61 +1,119 @@
-import React, { ReactNode } from "react";
+import React, {
+  PropsWithChildren,
+  ReactElement,
+  ReactNode,
+  useMemo,
+} from "react";
 import type { MenuProps } from "antd";
 import { Layout as Antdlayout, Menu, Dropdown, Space, message } from "antd";
 import styles from "./index.module.css";
 import { useRouter } from "next/router";
-import { DownOutlined } from "@ant-design/icons";
+import {
+  DownOutlined,
+  PieChartOutlined,
+  DesktopOutlined,
+  TeamOutlined,
+  ToolOutlined,
+  ReadOutlined,
+} from "@ant-design/icons";
 import Head from "next/head";
 import Link from "next/link";
 import { userLogout } from "@/api";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/modules";
+import { USER_ROLE } from "@/constants";
+import { useCurrentUser } from "@/utils/hoos";
 
 const { Header, Content, Sider } = Antdlayout;
 
 const ITEMS = [
   {
-    key: "dashboard",
+    key: "/dashboard",
     label: "Dashboard",
+    icon: <PieChartOutlined />,
+    role: USER_ROLE.STU,
   },
   {
     key: "glossary",
     label: "Glossary",
+    icon: <ReadOutlined />,
+    role: USER_ROLE.STU,
 
     children: [
-      { key: "/glossary", label: "Glossary" },
-      { key: "/glossary/list", label: "Glossary List" },
+      {
+        key: "/glossary",
+        label: "Glossary",
+        role: USER_ROLE.STU,
+      },
+      { key: "/glossary/list", label: "Glossary List", role: USER_ROLE.ADMIN },
     ],
   },
   {
     key: "course",
     label: "Learning in MSC IT+",
+    icon: <DesktopOutlined />,
+    role: USER_ROLE.STU,
 
     children: [
-      { key: "/course", label: "Course" },
-      { key: "/course/list", label: "Course List" },
-      { key: "/course/feedback", label: "Course Feedback" },
+      {
+        key: "/course",
+        label: "Course",
+        role: USER_ROLE.STU,
+      },
+      { key: "/course/list", label: "Course List", role: USER_ROLE.ADMIN },
+      {
+        key: "/course/feedback",
+        label: "Course Feedback",
+        role: USER_ROLE.ADMIN,
+      },
     ],
   },
   {
     key: "selflearning",
     label: "Self-learning Hub",
+    icon: <DesktopOutlined />,
+    role: USER_ROLE.STU,
 
     children: [
-      { key: "/selflearning", label: "Course" },
-      { key: "/selflearning/quiz", label: "Quiz" },
-      { key: "/selflearning/courselist", label: "Course List" },
-      { key: "/selflearning/questionlist", label: "Questions List" },
+      {
+        key: "/selflearning",
+        label: "Course",
+        role: USER_ROLE.STU,
+      },
+      {
+        key: "/selflearning/quiz",
+        label: "Quiz",
+        role: USER_ROLE.STU,
+      },
+      {
+        key: "/selflearning/courselist",
+        label: "Course List",
+        role: USER_ROLE.ADMIN,
+      },
+      {
+        key: "/selflearning/questionlist",
+        label: "Questions List",
+        role: USER_ROLE.ADMIN,
+      },
     ],
   },
   {
-    key: "englishsupport",
+    key: "/englishsupport",
     label: "English Support",
+    icon: <ToolOutlined />,
+    role: USER_ROLE.STU,
   },
   {
-    key: "postgraduatesupport",
+    key: "/postgraduatesupport",
     label: "Postgraduate-level Support",
+    icon: <ToolOutlined />,
+    role: USER_ROLE.STU,
   },
   {
-    key: "users",
+    key: "/users",
     label: "Users",
+    icon: <TeamOutlined />,
+    role: USER_ROLE.ADMIN,
   },
 ];
 
@@ -66,12 +124,19 @@ const USER_ITEMS: MenuProps["items"] = [
   },
   {
     label: "Log out",
-    key: "login",
+    key: "/login",
   },
 ];
 
-export function Layout({ children }: { children: ReactNode }) {
+const Layout: React.FC<
+  PropsWithChildren & { title?: string; operation?: ReactElement }
+> = ({ children, title = "图书列表", operation }) => {
   const router = useRouter();
+  const user = useCurrentUser();
+  console.log("user:", user);
+
+  const activeMenu = router.pathname;
+  const defaultOpenKeys = [activeMenu.split("/")[1]];
 
   const USER_ITEMS: MenuProps["items"] = [
     {
@@ -93,6 +158,19 @@ export function Layout({ children }: { children: ReactNode }) {
       key: "login",
     },
   ];
+  const items = useMemo(() => {
+    if (user?.role === USER_ROLE.STU) {
+      return ITEMS.filter((item) => {
+        if (item.children) {
+          item.children = item.children.filter((k) => k.role === USER_ROLE.STU);
+        }
+        return item.role === USER_ROLE.STU;
+      });
+    } else {
+      return ITEMS;
+    }
+  }, [user]);
+  console.log("menu items:", items);
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     router.push(key);
@@ -103,7 +181,6 @@ export function Layout({ children }: { children: ReactNode }) {
     router.push(key);
   };
 
-  const activeMenu = router.pathname;
   return (
     <>
       <Head>
@@ -128,15 +205,15 @@ export function Layout({ children }: { children: ReactNode }) {
             </span>
           </Header>
           <Antdlayout className={styles.sectionInner}>
-            <Sider width={250}>
+            <Sider width={280}>
               <Menu
                 mode="inline"
-                defaultSelectedKeys={["/dashboard"]}
-                defaultOpenKeys={["dashboard"]}
+                defaultOpenKeys={defaultOpenKeys}
                 selectedKeys={[activeMenu]}
                 style={{ height: "100%", borderRight: 0 }}
-                items={ITEMS}
+                items={items}
                 onClick={handleMenuClick}
+                className={styles.menu}
               />
             </Sider>
             <Antdlayout className={styles.sectionContent}>
@@ -147,4 +224,5 @@ export function Layout({ children }: { children: ReactNode }) {
       </main>
     </>
   );
-}
+};
+export default Layout;

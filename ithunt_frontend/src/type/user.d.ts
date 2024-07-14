@@ -16,3 +16,7 @@ export interface UserType {
   password: string;
   id?: string;
 }
+export interface UserLoginType {
+  email: string;
+  password: string;
+}

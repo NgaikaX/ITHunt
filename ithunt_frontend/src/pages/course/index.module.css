@@ -5,13 +5,14 @@
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+  padding-left: 10px;
 }
 .addbtn {
   float: right;
 }
 .cardtype {
-  width: 215px;
-  height: 350px;
+  width: 340px;
+  height: 300px;
   overflow: hidden;
 }
 .covertype {
