@@ -1,0 +1,14 @@
+.outsideWrap {
+  overflow: auto;
+  height: 100%;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.cardWrap {
+  overflow: auto;
+  width: 100%;
+  margin-bottom: 30px;
+}

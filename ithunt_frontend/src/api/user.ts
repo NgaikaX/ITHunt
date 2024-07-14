@@ -21,3 +21,10 @@ export async function userDelete(id: string) {
 export async function userUpdate(params: UserType) {
   return request.put(`/api/user`, params);
 }
+
+export async function userLogin(params: Pick<UserType, "email" | "password">) {
+  return request.post("/api/login", params);
+}
+export async function userLogout() {
+  return request.get("/api/logout");
+}

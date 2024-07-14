@@ -13,5 +13,6 @@ export interface UserType {
   email: string;
   role: USER_ROLE;
   status: USER_STATUS;
+  password: string;
   id?: string;
 }

@@ -3,7 +3,6 @@ import {
   Button,
   Form,
   GetProp,
-  Image,
   Input,
   Space,
   Upload,

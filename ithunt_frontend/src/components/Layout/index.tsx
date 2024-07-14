@@ -5,7 +5,8 @@ import styles from "./index.module.css";
 import { useRouter } from "next/router";
 import { DownOutlined } from "@ant-design/icons";
 import Head from "next/head";
-import { UserButton } from "@clerk/nextjs";
+import Link from "next/link";
+import { userLogout } from "@/api";
 
 const { Header, Content, Sider } = Antdlayout;
 
@@ -44,7 +45,6 @@ const ITEMS = [
       { key: "/selflearning/questionlist", label: "Questions List" },
     ],
   },
-
   {
     key: "englishsupport",
     label: "English Support",
@@ -72,12 +72,34 @@ const USER_ITEMS: MenuProps["items"] = [
 
 export function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
+
+  const USER_ITEMS: MenuProps["items"] = [
+    {
+      label: <Link href="/dashboard/notification">Notification</Link>,
+      key: "/dashboard/notification",
+    },
+    {
+      label: (
+        <span
+          onClick={async () => {
+            await userLogout();
+            message.success("Log out successfully");
+            router.push("/login");
+          }}
+        >
+          Log out
+        </span>
+      ),
+      key: "login",
+    },
+  ];
+
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     router.push(key);
   };
 
   const onClick: MenuProps["onClick"] = ({ key }) => {
-    message.info(`Click on item ${key}`);
+    //message.info(`Click on item ${key}`);
     router.push(key);
   };
 
@@ -95,7 +117,6 @@ export function Layout({ children }: { children: ReactNode }) {
           <Header className={styles.header}>
             ITHunt
             <span className={styles.user}>
-              <UserButton />
               <Dropdown menu={{ items: USER_ITEMS, onClick }}>
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
@@ -107,7 +128,7 @@ export function Layout({ children }: { children: ReactNode }) {
             </span>
           </Header>
           <Antdlayout className={styles.sectionInner}>
-            <Sider width={200}>
+            <Sider width={250}>
               <Menu
                 mode="inline"
                 defaultSelectedKeys={["/dashboard"]}

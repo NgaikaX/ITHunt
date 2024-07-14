@@ -1,0 +1,21 @@
+.tableWrap {
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-left: 10px;
+}
+.addbtn {
+  float: right;
+}
+.cardtype {
+  width: 350px;
+  height: 300px;
+  overflow: hidden;
+}
+.covertype {
+  width: 350px;
+  height: 200px;
+}
