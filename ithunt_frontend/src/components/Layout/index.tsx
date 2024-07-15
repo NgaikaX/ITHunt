@@ -2,10 +2,22 @@ import React, {
   PropsWithChildren,
   ReactElement,
   ReactNode,
+  useEffect,
   useMemo,
+  useState,
 } from "react";
 import type { MenuProps } from "antd";
-import { Layout as Antdlayout, Menu, Dropdown, Space, message } from "antd";
+import {
+  Layout as Antdlayout,
+  Menu,
+  Dropdown,
+  Space,
+  message,
+  Modal,
+  List,
+  Button,
+  Skeleton,
+} from "antd";
 import styles from "./index.module.css";
 import { useRouter } from "next/router";
 import {
@@ -24,6 +36,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/modules";
 import { USER_ROLE } from "@/constants";
 import { useCurrentUser } from "@/utils/hoos";
+import { useAppDispatch } from "@/store";
+import { fetchMessages } from "@/store/modules/messages";
 
 const { Header, Content, Sider } = Antdlayout;
 
@@ -118,17 +132,6 @@ const ITEMS = [
   },
 ];
 
-const USER_ITEMS: MenuProps["items"] = [
-  {
-    label: "Notification",
-    key: "/dashboard/notification",
-  },
-  {
-    label: "Log out",
-    key: "/login",
-  },
-];
-
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const userRole = useSelector((state: RootState) => state.user.role);
   const userName = useSelector((state: RootState) => state.user.username);
@@ -139,39 +142,31 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 
   const activeMenu = router.pathname;
   const defaultOpenKeys = [activeMenu.split("/")[1]];
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const USER_ITEMS: MenuProps["items"] = [
-    {
-      label: <Link href="/dashboard/notification">Notification</Link>,
-      key: "/dashboard/notification",
-    },
-    {
-      label: (
-        <span
-          onClick={async () => {
-            await userLogout();
-            message.success("Log out successfully");
-            router.push("/login");
-          }}
-        >
-          Log out
-        </span>
-      ),
-      key: "login",
-    },
-  ];
-  /*const items = useMemo(() => {
-    if (userRole === USER_ROLE.STU) {
-      return ITEMS.filter((item) => {
-        if (item.children) {
-          item.children = item.children.filter((k) => k.role === USER_ROLE.STU);
-        }
-        return item.role === USER_ROLE.STU;
-      });
-    } else {
-      return ITEMS;
-    }
-  }, [userRole]);*/
+  const USER_ITEMS = useMemo(
+    () => [
+      {
+        label: <span onClick={() => setModalVisible(true)}>Notification</span>,
+        key: "/dashboard/notification",
+      },
+      {
+        label: (
+          <span
+            onClick={async () => {
+              await userLogout();
+              message.success("Log out successfully");
+              router.push("/login");
+            }}
+          >
+            Log out
+          </span>
+        ),
+        key: "login",
+      },
+    ],
+    [setModalVisible, router]
+  );
   const filteredItems = useMemo(() => {
     // 先根据用户角色过滤顶级菜单项
     const topLevelItems = ITEMS.filter((item) => item.role === userRole);
@@ -191,13 +186,30 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   console.log("menu items:", filteredItems);
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
-    router.push(key);
+    router.push(`http://localhost:3000/${key}`);
   };
 
-  const onClick: MenuProps["onClick"] = ({ key }) => {
+  /*const onClick: MenuProps["onClick"] = ({ key }) => {
     //message.info(`Click on item ${key}`);
     router.push(key);
-  };
+  };*/
+
+  //notifications
+  const dispatch = useAppDispatch();
+  const messages = useSelector((state: RootState) => state.messages.messages);
+  console.log("messages:", messages);
+  const [initLoading, setInitLoading] = useState(true);
+  //messages details
+  const [showModal, setShowModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<string>("");
+
+  useEffect(() => {
+    setInitLoading(false);
+    if (modalVisible) {
+      dispatch(fetchMessages());
+    }
+  }, [modalVisible, dispatch]);
 
   return (
     <>
@@ -212,14 +224,14 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
           <Header className={styles.header}>
             ITHunt
             <span className={styles.user}>
-              <Dropdown menu={{ items: USER_ITEMS, onClick }}>
-                <a onClick={(e) => e.preventDefault()}>
+              <Dropdown menu={{ items: USER_ITEMS }}>
+                <span onClick={(e) => e.preventDefault()}>
                   <Space>
                     Welcome back
                     <span className={styles.userName}>{userName}</span>
                     <CaretDownOutlined />
                   </Space>
-                </a>
+                </span>
               </Dropdown>
             </span>
           </Header>
@@ -244,6 +256,77 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
             </Antdlayout>
           </Antdlayout>
         </Antdlayout>
+        <Modal
+          title="Notification List"
+          visible={modalVisible}
+          onCancel={() => setModalVisible(false)}
+          footer={null}
+          className={styles.messagesWin}
+        >
+          {/* 在这里渲染通知列表的内容 */}
+          <List
+            className="messages"
+            itemLayout="horizontal"
+            dataSource={messages}
+            renderItem={(item) => {
+              const interestsString = item.interests.join(", ");
+              const description = `Interest: ${interestsString};  Language: ${item.language}`;
+              const context = `Hello ${userName}, I am ${item.sender_name}. 
+              It's great to meet you! I've noticed we have similar interests or speak the same language. If you'd like to connect, here's my contact information: ${item.contact}.
+              Looking forward to hearing from you!
+              ----${item.sender_name}`;
+
+              return (
+                <List.Item
+                  actions={[
+                    <Button
+                      key="more"
+                      type="primary"
+                      onClick={() => {
+                        setSelectedMessage(context);
+                        setShowModal(true);
+                      }}
+                    >
+                      More
+                    </Button>,
+                  ]}
+                >
+                  <Skeleton avatar title={false} loading={initLoading} active>
+                    <List.Item.Meta
+                      title={item.sender_name}
+                      description={description}
+                    />
+                  </Skeleton>
+                </List.Item>
+              );
+            }}
+          />
+        </Modal>
+        <Modal
+          title="Messages"
+          visible={showModal}
+          confirmLoading={confirmLoading}
+          onCancel={() => setShowModal(false)}
+          footer={[
+            <Button
+              key="customButton"
+              type="primary"
+              onClick={() => {
+                setConfirmLoading(true);
+                message.success(`You have sent message successfully!`);
+                setShowModal(false);
+                setConfirmLoading(false);
+              }}
+            >
+              Send Message
+            </Button>,
+            <Button key="cancelButton" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>,
+          ]}
+        >
+          <p>{selectedMessage}</p>
+        </Modal>
       </main>
     </>
   );

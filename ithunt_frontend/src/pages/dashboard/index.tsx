@@ -11,6 +11,7 @@ import {
   Form,
   Input,
   List,
+  Modal,
   Progress,
   Radio,
   RadioChangeEvent,
@@ -152,12 +153,6 @@ export default function Home() {
     console.log("views", e.target.value);
   };
 
-  //const [placement, SetPlacement] = useState<SelectCommonPlacement>("topLeft");
-
-  /*const placementChange = (e: RadioChangeEvent) => {
-    SetPlacement(e.target.value);
-  };*/
-
   const renderCourseList = () => (
     <List
       className="demo-loadmore-list"
@@ -247,6 +242,11 @@ export default function Home() {
     />
   );
 
+  //Say Hello
+
+  const [showModal, setShowModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
   return (
     <>
       <Row gutter={24}>
@@ -275,7 +275,7 @@ export default function Home() {
                 size={150}
                 strokeColor="mediumslateblue"
               />
-              <h2>Course Progress</h2>
+              <h2>Quiz Progress</h2>
               <p className={styles.description}>{quizmessage}</p>
             </Card>
           </div>
@@ -390,7 +390,9 @@ export default function Home() {
                       <Button
                         key="sayhello"
                         type="primary"
-                        onClick={() => message.info(`Hello, ${item.username}!`)}
+                        onClick={() => {
+                          setShowModal(true);
+                        }}
                       >
                         Say Hello
                       </Button>,
@@ -409,6 +411,23 @@ export default function Home() {
           </Card>
         </Col>
       </Row>
+      <Modal
+        title="Say Hello Confirmation"
+        visible={showModal}
+        confirmLoading={confirmLoading}
+        onOk={() => {
+          setConfirmLoading(true);
+          setTimeout(() => {
+            message.success(`You have sent message to successfully!`);
+            setShowModal(false);
+            setConfirmLoading(false);
+            //TODO：一个put Message的接口
+          }, 2000); //模拟异步
+        }}
+        onCancel={() => setShowModal(false)}
+      >
+        <p>Do you want to say hello to someone?</p>
+      </Modal>
     </>
   );
 }

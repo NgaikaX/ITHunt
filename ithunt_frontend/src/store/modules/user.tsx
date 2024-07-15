@@ -1,7 +1,7 @@
 // src/store/modules/user.ts
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserLoginType, UserType } from "@/type";
+import { UserType } from "@/type";
 import { RootState } from ".";
 
 const userSlice = createSlice({

@@ -31,3 +31,10 @@
   font-weight: bold;
   padding-left: 2px;
 }
+
+.messagesWin {
+  height: 600px;
+  width: 400px;
+  overflow: auto;
+  border-radius: 16px;
+}
