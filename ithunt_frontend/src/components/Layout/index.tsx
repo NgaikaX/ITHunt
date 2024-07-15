@@ -10,6 +10,7 @@ import styles from "./index.module.css";
 import { useRouter } from "next/router";
 import {
   DownOutlined,
+  CaretDownOutlined,
   PieChartOutlined,
   DesktopOutlined,
   TeamOutlined,
@@ -128,12 +129,13 @@ const USER_ITEMS: MenuProps["items"] = [
   },
 ];
 
-const Layout: React.FC<
-  PropsWithChildren & { title?: string; operation?: ReactElement }
-> = ({ children, title = "图书列表", operation }) => {
+const Layout: React.FC<PropsWithChildren> = ({ children }) => {
+  const userRole = useSelector((state: RootState) => state.user.role);
+  const userName = useSelector((state: RootState) => state.user.username);
+  console.log("user name:", userName);
   const router = useRouter();
-  const user = useCurrentUser();
-  console.log("user:", user);
+  //const user = useCurrentUser();
+  console.log("user:", userRole);
 
   const activeMenu = router.pathname;
   const defaultOpenKeys = [activeMenu.split("/")[1]];
@@ -158,8 +160,8 @@ const Layout: React.FC<
       key: "login",
     },
   ];
-  const items = useMemo(() => {
-    if (user?.role === USER_ROLE.STU) {
+  /*const items = useMemo(() => {
+    if (userRole === USER_ROLE.STU) {
       return ITEMS.filter((item) => {
         if (item.children) {
           item.children = item.children.filter((k) => k.role === USER_ROLE.STU);
@@ -169,8 +171,24 @@ const Layout: React.FC<
     } else {
       return ITEMS;
     }
-  }, [user]);
-  console.log("menu items:", items);
+  }, [userRole]);*/
+  const filteredItems = useMemo(() => {
+    // 先根据用户角色过滤顶级菜单项
+    const topLevelItems = ITEMS.filter((item) => item.role === userRole);
+
+    // 遍历顶级菜单项，进一步过滤子菜单项
+    topLevelItems.forEach((item) => {
+      if (item.children) {
+        item.children = item.children.filter(
+          (child) => child.role === userRole
+        );
+      }
+    });
+
+    return topLevelItems;
+  }, [userRole]);
+
+  console.log("menu items:", filteredItems);
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     router.push(key);
@@ -197,8 +215,9 @@ const Layout: React.FC<
               <Dropdown menu={{ items: USER_ITEMS, onClick }}>
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
-                    User
-                    <DownOutlined />
+                    Welcome back
+                    <span className={styles.userName}>{userName}</span>
+                    <CaretDownOutlined />
                   </Space>
                 </a>
               </Dropdown>
@@ -211,13 +230,17 @@ const Layout: React.FC<
                 defaultOpenKeys={defaultOpenKeys}
                 selectedKeys={[activeMenu]}
                 style={{ height: "100%", borderRight: 0 }}
-                items={items}
+                items={filteredItems}
                 onClick={handleMenuClick}
                 className={styles.menu}
               />
             </Sider>
             <Antdlayout className={styles.sectionContent}>
-              <Content className={styles.content}>{children}</Content>
+              {router.pathname !== "/dashboard" ? (
+                <Content className={styles.content}>{children}</Content>
+              ) : (
+                <Content>{children}</Content>
+              )}
             </Antdlayout>
           </Antdlayout>
         </Antdlayout>

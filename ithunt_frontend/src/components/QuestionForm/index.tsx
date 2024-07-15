@@ -47,7 +47,7 @@ export default function QuestionForm({
       answer: values.answer, // Assign the selected index as string
     };
     if (editData?.id) {
-      await questionUpdate(questionData);
+      await questionUpdate(values);
     } else {
       await questionAdd(questionData);
     }

@@ -1,0 +1,60 @@
+.tableWrap {
+  overflow: auto;
+  height: 100%;
+  width: 80%;
+  margin-left: 10%;
+}
+
+.cardtype {
+  width: 350px;
+  height: 250px;
+  border-radius: 15px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.cover {
+  width: 350px;
+  height: 150px;
+}
+
+.cardLayout {
+  padding-right: 10px;
+  padding-left: 5px;
+  width: 100%;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  flex-direction: row;
+  display: flex;
+}
+
+.info {
+  width: 360px;
+  height: 400px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+.studyPartner {
+  width: 360px;
+  height: 300px;
+  border-radius: 15px;
+  overflow: auto;
+}
+.courseTable {
+  padding-right: 10px;
+  padding-left: 5px;
+}
+.tableCard {
+  height: 450px;
+  overflow: auto;
+}
+.description {
+  font-size: 13px;
+  color: gray;
+}
+.editInfo {
+  width: 80px;
+}

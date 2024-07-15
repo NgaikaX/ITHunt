@@ -1,29 +1,32 @@
 import { Button, Form, Input, message } from "antd";
 import styles from "./index.module.css";
 import Link from "next/link";
-import { userLogin } from "@/api";
 import { useRouter } from "next/router";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "@/store/modules/user";
-import { RootState } from "@/store/modules";
-import { UserLoginType } from "@/type";
+import { UserLoginType, UserType } from "@/type";
 import request from "@/utils/request";
+import { useDispatch } from "react-redux";
+import { userLogin } from "@/api";
+import { loginUser } from "@/store/modules/user";
 
 export default function Home() {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleFinish = async (values: UserLoginType) => {
     try {
-      const res = await request.post("/api/login", values);
+      //const res = await request.post("/api/login", values);
+      const res = await userLogin(values);
+
       console.log(
         "%c [ res ]-17",
         "font-size:13px; background:pink; color:#bf2c9f;",
-        res
+        res.data
       );
-      localStorage.setItem("user", JSON.stringify(res.data));
+      //localStorage.setItem("user", JSON.stringify(res));
       message.success("Log in successfully");
+      dispatch(loginUser(res.data as UserType));
 
-      router.push("/dashboard");
+      router.push("dashboard");
     } catch (error) {
       console.error(error);
     }

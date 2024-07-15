@@ -25,3 +25,9 @@
 .menu {
   font-size: 16px;
 }
+
+.userName {
+  color: rgb(181, 127, 226);
+  font-weight: bold;
+  padding-left: 2px;
+}

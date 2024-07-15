@@ -12,3 +12,21 @@ export enum QUESTION_TYPE {
   TF = "true-false",
   FREE_TEXT = "free text",
 }
+
+export enum INTEREST {
+  RE = "Reading",
+  MO = "Movies",
+  MU = "Music",
+  TR = "Traveling",
+  SP = "Sport",
+  NON = "None",
+}
+
+export enum LANGUAGE {
+  EN = "English",
+  SP = "Spanish",
+  MA = "Mandarin",
+  FR = "French",
+  AR = "Arabic",
+  NON = "None",
+}

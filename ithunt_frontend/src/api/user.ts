@@ -1,5 +1,10 @@
 import request from "../utils/request";
-import { UserQueryType, UserType } from "../type";
+import {
+  UserInfoQueryType,
+  UserInfoType,
+  UserQueryType,
+  UserType,
+} from "../type";
 import qs from "qs";
 import axios from "axios";
 
@@ -27,4 +32,16 @@ export async function userLogin(params: Pick<UserType, "email" | "password">) {
 }
 export async function userLogout() {
   return request.get("/api/logout");
+}
+export async function userInfoAdd(params: UserInfoType) {
+  return request.post("/api/userinfo", params);
+}
+export async function getUserInfoList(params?: UserInfoQueryType) {
+  return request.get(`/api/userinfo?${qs.stringify(params)}`);
+}
+export async function getUserCourseList() {
+  return request.get(`/api/usercourse`);
+}
+export async function getUserQuizList() {
+  return request.get(`/api/userquiz`);
 }
