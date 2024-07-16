@@ -5,6 +5,9 @@ import qs from "qs";
 export async function getQuestionList(params?: QuestionQueryType) {
   return request.get(`/api/question?${qs.stringify(params)}`);
 }
+export async function getQuizQuestions(id: string) {
+  return request.get(`/api/quiz/${id}`);
+}
 
 export async function questionAdd(params: QuestionType) {
   return request.post("/api/question", params);

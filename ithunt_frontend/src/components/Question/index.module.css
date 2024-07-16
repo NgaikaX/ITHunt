@@ -3,19 +3,28 @@
   height: 100%;
   width: 100%;
   display: flex;
-  gap: 1.6%;
+  gap: 2%;
   flex-wrap: wrap;
-  padding-left: 10px;
+  justify-content: center;
 }
 .addbtn {
   float: right;
 }
 .cardtype {
-  width: 32%;
+  width: 320px;
   height: 300px;
   overflow: hidden;
+  flex-shrink: 1;
 }
 .covertype {
-  width: 350px;
-  height: 200px;
+  width: 215px;
+  height: 215px;
+}
+
+.optionlist {
+  padding-top: 8px;
+}
+
+.freetext {
+  width: 600px;
 }

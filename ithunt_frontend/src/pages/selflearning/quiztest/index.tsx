@@ -7,7 +7,8 @@ import { QuestionType } from "@/type/question";
 const sampleQuestions: QuestionType[] = [
   {
     id: "1",
-    num: "1",
+    num: 1,
+    course_id: 3,
     coursename: "Sample Course",
     type: QUESTION_TYPE.MUL,
     content: "What is the capital of France?",
@@ -16,7 +17,8 @@ const sampleQuestions: QuestionType[] = [
   },
   {
     id: "2",
-    num: "2",
+    num: 2,
+    course_id: 3,
     coursename: "Sample Course",
     type: QUESTION_TYPE.FREE_TEXT,
     content: "Describe the water cycle.",
@@ -25,7 +27,8 @@ const sampleQuestions: QuestionType[] = [
   },
   {
     id: "3",
-    num: "3",
+    num: 3,
+    course_id: 3,
     coursename: "Sample Course",
     type: QUESTION_TYPE.TF,
     content: "The Earth is flat.",
@@ -33,7 +36,6 @@ const sampleQuestions: QuestionType[] = [
     answer: "false",
   },
 ];
-
 export default function Home() {
   return <QuizForm questions={sampleQuestions} />;
 }

@@ -1,0 +1,45 @@
+.tableWrap {
+  overflow: auto;
+  height: 550px;
+  width: 100%;
+  display: flex;
+  padding-left: 20px;
+  justify-content: start;
+  border-color: rgba(30, 143, 255, 0.423);
+  background-color: rgba(30, 143, 255, 0.02);
+}
+.containerWrap {
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+}
+
+.questionLayout {
+  display: flex;
+  justify-content: center;
+}
+
+.btn {
+  padding-top: 10px;
+}
+.buttongrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 每行3列，自动调整布局 */
+  gap: 3px; /* 按钮之间的间隔 */
+}
+
+.gridbutton {
+  padding: 10px 10px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #007bff;
+  border-color: #007bff83;
+  border-radius: 4px;
+
+  width: 40px;
+  height: 40px;
+  text-align: center;
+}
+.answeredButton {
+  background-color: #007bff83;
+}

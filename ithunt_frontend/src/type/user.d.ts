@@ -54,3 +54,11 @@ export interface UserQuizType {
   finishdate: string;
   score: string;
 }
+
+export interface SubmitQuizType {
+  id: number;
+  coursename: string;
+  userid: string;
+  finishtime: string;
+  answer: string[];
+}

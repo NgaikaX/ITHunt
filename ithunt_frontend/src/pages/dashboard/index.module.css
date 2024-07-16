@@ -16,6 +16,17 @@
   text-align: center;
 }
 
+.cardtypeBlue {
+  width: 350px;
+  height: 250px;
+  border-radius: 15px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
 .cover {
   width: 350px;
   height: 150px;
@@ -57,4 +68,7 @@
 }
 .editInfo {
   width: 80px;
+}
+.coursebtn {
+  width: 78px;
 }

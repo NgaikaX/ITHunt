@@ -3,10 +3,12 @@ import { Card, Form } from "antd";
 import { getCourseList } from "@/api";
 import { CourseType } from "@/type";
 import styles from "./index.module.css";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const { Meta } = Card;
   const [cardList, setCourseList] = useState<CourseType[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     (async function () {
@@ -20,6 +22,9 @@ export default function Home() {
       });
     })();
   }, []);
+  const handleClick = (id: string) => {
+    router.push(`/course/details/${id}`);
+  };
 
   const renderCards = () => {
     const cards = [];
@@ -33,6 +38,7 @@ export default function Home() {
           cover={
             <img alt="example" src={card.cover} className={styles.covertype} />
           }
+          onClick={() => handleClick(card.id as string)}
         >
           <Meta title={card.coursename} description={card.description} />
         </Card>

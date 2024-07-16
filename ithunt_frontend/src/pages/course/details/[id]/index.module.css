@@ -10,8 +10,17 @@
 .cardWrap {
   overflow: auto;
   width: 100%;
-  margin-bottom: 30px;
 }
 .quizentrance {
   background-color: #4096ff9c;
+}
+.coverCon {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.descriptionCard {
+  margin-bottom: 30px;
 }

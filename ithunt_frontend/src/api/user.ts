@@ -1,5 +1,6 @@
 import request from "../utils/request";
 import {
+  SubmitQuizType,
   UserInfoQueryType,
   UserInfoType,
   UserQueryType,
@@ -44,4 +45,8 @@ export async function getUserCourseList() {
 }
 export async function getUserQuizList() {
   return request.get(`/api/userquiz`);
+}
+
+export async function submitQuiz(params: SubmitQuizType) {
+  return request.post("/api/submitquiz", params);
 }

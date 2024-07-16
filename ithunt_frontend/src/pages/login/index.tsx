@@ -4,13 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { UserLoginType, UserType } from "@/type";
 import request from "@/utils/request";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userLogin } from "@/api";
 import { loginUser } from "@/store/modules/user";
+import { RootState } from "@/store";
+import { USER_ROLE } from "@/constants";
 
 export default function Home() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const userRole = useSelector((state: RootState) => state.user.role);
 
   const handleFinish = async (values: UserLoginType) => {
     try {
@@ -26,7 +29,9 @@ export default function Home() {
       message.success("Log in successfully");
       dispatch(loginUser(res.data as UserType));
 
-      router.push("dashboard");
+      userRole === USER_ROLE.STU
+        ? router.push("dashboard")
+        : router.push("users");
     } catch (error) {
       console.error(error);
     }

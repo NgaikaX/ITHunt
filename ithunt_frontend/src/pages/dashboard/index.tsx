@@ -175,6 +175,7 @@ export default function Home() {
           <List.Item
             actions={[
               <Button
+                className={styles.coursebtn}
                 key="sayhello"
                 type="primary"
                 onClick={() =>
@@ -219,6 +220,7 @@ export default function Home() {
           <List.Item
             actions={[
               <Button
+                className={styles.coursebtn}
                 key="sayhello"
                 type="primary"
                 /*onClick={() =>
@@ -394,7 +396,7 @@ export default function Home() {
                           setShowModal(true);
                         }}
                       >
-                        Say Hello
+                        Say Hi
                       </Button>,
                     ]}
                   >

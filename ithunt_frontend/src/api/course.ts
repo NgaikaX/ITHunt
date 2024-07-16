@@ -15,3 +15,9 @@ export async function getFeedbackList(params?: FeedbackQueryType) {
 export async function courseDelete(id: string) {
   return request.delete(`/api/courses/${id}`);
 }
+export async function getCourseDetails(id: string) {
+  return request.get(`/api/courses/${id}`);
+}
+export async function getFeedback(id: string) {
+  return request.get(`/api/feedback/${id}`);
+}
