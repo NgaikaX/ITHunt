@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-// 假设这是你的结果页面组件
 export default function ResultPage() {
   const router = useRouter();
   const [quizResult, setQuizResult] = useState<any>(null); // 假设 quizResult 包含了结果数据

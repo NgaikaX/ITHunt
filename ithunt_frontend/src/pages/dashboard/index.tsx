@@ -223,10 +223,10 @@ export default function Home() {
                 className={styles.coursebtn}
                 key="sayhello"
                 type="primary"
-                /*onClick={() =>
-                    //message.info(btn)
-                    router.push(`/selflearning/coursedetails/${item.id}`)
-                  }*/
+                onClick={() =>
+                  //message.info(btn)
+                  router.push(`/selflearning/quiz/resultpage}`)
+                }
               >
                 {btn}
               </Button>,
@@ -253,6 +253,7 @@ export default function Home() {
     <>
       <Row gutter={24}>
         <Col span={16}>
+          {/*learning progress */}
           <div className={styles.cardLayout}>
             <Card className={styles.cardtype}>
               <Progress
@@ -281,6 +282,7 @@ export default function Home() {
               <p className={styles.description}>{quizmessage}</p>
             </Card>
           </div>
+          {/*Course and Quiz Management part */}
           <div className={styles.courseTable}>
             <Card className={styles.tableCard}>
               <Radio.Group value={view} onChange={handleViewChange}>
@@ -291,6 +293,7 @@ export default function Home() {
             </Card>
           </div>
         </Col>
+        {/* User Info  */}
         <Col span={8}>
           <Card className={styles.info}>
             <h3>Personal Information</h3>
@@ -375,7 +378,7 @@ export default function Home() {
               </Form.Item>
             </Form>
           </Card>
-
+          {/*Study Partner */}
           <Card title="Study Partners" className={styles.studyPartner}>
             <List
               className="demo-loadmore-list"
@@ -413,6 +416,7 @@ export default function Home() {
           </Card>
         </Col>
       </Row>
+      {/*Midal part */}
       <Modal
         title="Say Hello Confirmation"
         visible={showModal}

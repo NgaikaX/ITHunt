@@ -45,7 +45,6 @@ export default function CourseDetail() {
   return (
     <div className={styles.outsideWrap}>
       <div className={styles.coverCon}>
-        {" "}
         <img src={course.cover} className={styles.cardWrap} />
       </div>
 

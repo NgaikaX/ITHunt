@@ -104,12 +104,12 @@ const ITEMS = [
     role: USER_ROLE.STU,
     children: [
       {
-        key: "/englishsupport",
+        key: "/academic",
         label: "English Support",
         role: USER_ROLE.STU,
       },
       {
-        key: "/postgraduatesupport",
+        key: "/academic/postgraduatesupport",
         label: "Postgraduate-level Support",
         role: USER_ROLE.STU,
       },
