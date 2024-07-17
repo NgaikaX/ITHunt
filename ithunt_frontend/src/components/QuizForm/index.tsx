@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { QuestionType } from "@/type/question";
 import Question from "../Question";
 import styles from "./index.module.css";
+import test from "node:test";
 
 export default function QuizPage({ questions }: { questions: QuestionType[] }) {
   console.log("questions", questions);
@@ -12,7 +13,7 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const router = useRouter();
-  const courseName = questions[0].coursename;
+  const courseName = "test";
   const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
