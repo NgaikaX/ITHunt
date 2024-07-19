@@ -1,0 +1,10 @@
+server:
+    port: 9090
+
+# database set up
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: 12345678
+        url: jdbc:mysql://localhost:3306/ithunt_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
