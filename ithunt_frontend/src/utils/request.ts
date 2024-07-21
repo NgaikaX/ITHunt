@@ -1,6 +1,7 @@
 import { message as AntdMessage } from "antd";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import Router from "next/router";
+import {getToken} from "@/utils/token";
 
 interface AxiosInstanceType extends AxiosInstance {
   get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
@@ -27,13 +28,18 @@ interface AxiosInstanceType extends AxiosInstance {
 export const CreateAxiosInstance = (
   config?: AxiosRequestConfig
 ): AxiosInstanceType => {
-  const instance = axios.create({
+  const instance = axios.create({baseURL:"http://localhost:9090/",
     timeout: 5000,
     ...config,
-  });
+  })as AxiosInstanceType;
 
   instance.interceptors.request.use(
     function (config) {
+        config.headers['token'] = 'token';
+      const token = getToken()
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
       return config;
     },
     function (error) {
@@ -46,7 +52,7 @@ export const CreateAxiosInstance = (
       // If successfully logged in
       const { status, data, message } = response as any;
       if (status === 200) {
-        return data;
+        return data;//if success return data
       } else if (status === 401) {
         // No permission or not logged in
         return Router.push("/login");
@@ -67,4 +73,5 @@ export const CreateAxiosInstance = (
   return instance;
 };
 
-export default CreateAxiosInstance({});
+const request = CreateAxiosInstance({});
+export default request;
