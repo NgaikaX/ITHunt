@@ -1,6 +1,6 @@
 const TOKENKEY = "token_key";
 
-function setToken(token) {
+function setToken(token: string) {
   return localStorage.setItem(TOKENKEY, token);
 }
 

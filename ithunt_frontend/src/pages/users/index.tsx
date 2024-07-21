@@ -15,8 +15,8 @@ import {
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
 import router from "next/router";
-import { log } from "console";
-import { getUserList, userDelete } from "@/api";
+
+import {getUserAllList, getUserList, userDelete} from "@/api";
 import { UserQueryType, UserType } from "@/type";
 import { USER_ROLE, USER_STATUS } from "@/constants";
 
@@ -64,32 +64,39 @@ const COLUMNS = [
 export default function Home() {
   const Option = Select.Option;
   const [form] = Form.useForm();
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    pageNum: 1,
+    pageSize: 20,
+    showSizeChanger: true,
+    total: 0,
+  });
 
   async function fetchData(value?: any) {
-    const res = await getUserList({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      ...value,
-    });
+    const res = await getUserAllList();
     const { data } = res;
+    console.log(
+        "%c[res]-2",
+        "font-size:13px; background:pink; color:#000",
+        res
+    );
 
     setData(data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    setPagination({ ...pagination, pageNum: 1, total: res.total });
   }
 
   const handleSearchFinish = async (values: UserQueryType) => {
     const res = await getUserList({
       ...values,
-      current: 1,
+      pageNum: 1,
       pageSize: pagination.pageSize,
     });
-    /*console.log(
+    console.log(
       "%c[res.data]-21",
       "font-size:13px; background:pink; color:#000",
       res.data
-    );*/
-    setData(res.data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    );
+    setData(res.data.list);
+    setPagination({ ...pagination, pageNum: 1, total: res.data.total });
   };
   const handleSearchReset = () => {
     //console.log(form);
@@ -99,7 +106,7 @@ export default function Home() {
     setPagination(pagination);
     const query = form.getFieldsValue();
     getUserList({
-      current: pagination.current,
+      pageNum: pagination.pageNum,
       pageSize: pagination.pageSize,
       ...query,
     });
@@ -147,12 +154,7 @@ export default function Home() {
     },
   ];
 
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 20,
-    showSizeChanger: true,
-    total: 0,
-  });
+
 
   const [data, setData] = useState([]);
 
@@ -174,8 +176,8 @@ export default function Home() {
       >
         <Row gutter={24}>
           <Col span={6}>
-            <Form.Item name="email" label="E-mail">
-              <Input placeholder="Enter a user's e-mail" allowClear />
+            <Form.Item name="username" label="User name">
+              <Input placeholder="Enter a user name" allowClear />
             </Form.Item>
           </Col>
           <Col span={6}>

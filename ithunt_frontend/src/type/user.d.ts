@@ -6,9 +6,9 @@ import {
 } from "./../constants/index";
 
 export interface UserQueryType {
-  email?: string;
+  username?: string;
   role?: USER_ROLE;
-  current?: number;
+  pageNum?: number;
   pageSize?: number;
   all?: boolean;
 }
@@ -19,7 +19,7 @@ export interface UserType {
   role: USER_ROLE;
   status: USER_STATUS;
   password: string;
-  id: string;
+  id: number;
 }
 export interface UserLoginType {
   email: string;

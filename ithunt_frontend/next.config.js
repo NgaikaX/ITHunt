@@ -16,10 +16,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
+        source: "/:path*",
         destination:
-          "http://127.0.0.1:4523/m1/4782268-4436149-default/api/:path*",
-        // destination: 'http://localhost:3000/api/:path*'
+          //"http://127.0.0.1:4523/m1/4782268-4436149-default/api/:path*",
+          "http://localhost:9090/:path*"
       },
     ];
   },
