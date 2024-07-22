@@ -83,7 +83,9 @@ export default function Home() {
           </main>
         </Col>
         <Col span={14}>
-          <div ><img alt=" " src="/assets/login02.png" className={styles.picture}/></div>
+          <div ><img alt=" " src="/assets/login02.png" className={styles.picture}/>
+            <p className={styles.attribute}> Illustration designed by Freepik</p>
+          </div>
         </Col>
       </Row>
 
