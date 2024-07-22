@@ -10,17 +10,13 @@ import qs from "qs";
 import axios from "axios";
 
 
-export async function getUserAllList() {
-  return request.get(`http://localhost:9090/user/selectAll`);
-  //return request.get(`/api/user?${qs.stringify(params)}`);
-}
 
 export async function getUserList(params?: UserQueryType) {
   return request.get(`/user/selectByPage?${qs.stringify(params)}`);
   //return request.get(`/api/user?${qs.stringify(params)}`);
 }
 export async function userAdd(params: UserType) {
-  return request.post("/api/user", params);
+  return request.post("/user/add", params);
 }
 
 export async function getUserDetails(id: string) {
@@ -28,15 +24,15 @@ export async function getUserDetails(id: string) {
 }
 
 export async function userDelete(id: string) {
-  return request.delete(`/api/user/${id}`);
+  return request.delete(`/user/delete/${id}`);
 }
 
 export async function userUpdate(params: UserType) {
-  return request.put(`/api/user`, params);
+  return request.put(`/user/edit`, params);
 }
 
 export async function userLogin(params: Pick<UserType, "email" | "password">) {
-  return request.post("/api/login", params);
+  return request.post("/login", params);
 }
 export async function userLogout() {
   return request.get("/api/logout");

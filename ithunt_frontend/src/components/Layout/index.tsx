@@ -150,7 +150,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
         label: (
           <span
             onClick={async () => {
-              await userLogout();
+              //await userLogout();
               message.success("Log out successfully");
               router.push("/login");
             }}

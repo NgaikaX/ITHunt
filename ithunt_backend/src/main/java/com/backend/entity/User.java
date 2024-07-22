@@ -1,9 +1,10 @@
 package com.backend.entity;
 
+
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import jdk.jfr.DataAmount;
 
 /**
  * Function: User entity
@@ -20,6 +21,10 @@ public class User {
     private String email;
     private String status;
     private String uploaddate;
+
+    @TableField(exist = false)
+    private String token;
+
 
     public Integer getId() {
         return id;

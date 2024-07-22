@@ -1,14 +1,15 @@
 package com.backend.service;
 
-import com.backend.common.Page;
 import com.backend.entity.User;
+import com.backend.exception.ServiceException;
 import com.backend.mapper.UserMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Function:
@@ -17,45 +18,30 @@ import java.util.Map;
  */
 
 @Service
-public class UserService {
-    @Autowired
+public class UserService extends ServiceImpl<UserMapper,User> {
+    @Resource
     UserMapper userMapper;
-    public void insterUser(User user){
-        userMapper.insert(user);
+
+    public User selectByEmail(String email) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("email", email);
+        // Query the user information in the database based on email
+        return getOne(queryWrapper);
+    }
+    public User login(User user) {
+        User dbUser = selectByEmail(user.getEmail());
+        if (dbUser == null) {
+            // Throw a custom exception
+            throw new ServiceException("Wrong email or password");
+        }
+        if (!user.getPassword().equals(dbUser.getPassword())) {
+            throw new ServiceException("Wrong email or password");
+        }
+        if(!user.getRole().equals("on")){
+            throw new ServiceException("This account has been disabled");
+        }
+        return dbUser;
     }
 
-    public void editUser(User user) {
-        userMapper.edit(user);
-    }
 
-    public void deleteUser(Integer id) {
-        userMapper.delet(id);
-    }
-
-    public List<User> selectAllUser() {
-       return userMapper.selectAllUser();
-    }
-
-    public User selectByUsername(String username) {
-        return userMapper.selectByUsername(username);
-    }
-
-    public List<User> selectByRole(String role) {
-        return userMapper.selectByRole(role);
-    }
-
-    public List<User> selectByMul(String username, String role) {
-        return userMapper.selectByMul(username,role);
-    }
-
-    public Page<User> selectByPage( String username, String role,Integer pageNum, Integer pageSize) {
-        Integer skipNum = (pageNum-1)*pageSize;
-
-        Page<User> page = new Page<>();
-        List<User> userList =userMapper.selectByPage(username,role,skipNum,pageSize);
-        Integer total =userMapper.selectCountByPage(username,role);
-        page.setList(userList);
-        page.setTotal(total);
-        return page;
-    }
 }

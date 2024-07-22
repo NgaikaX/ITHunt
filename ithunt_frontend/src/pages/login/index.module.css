@@ -1,11 +1,11 @@
 .container {
-  width: 400px;
-  height: 350px;
+  width: 550px;
+  height: 600px;
   position: absolute;
-  top: 40%;
-  left: 50%;
+  top: 35%;
+  left: 45%;
   transform: translate(-200px, -100px);
-  background-color: #fff;
+  background-color: transparent;
   padding: 24px;
   border-radius: 15px;
 }
@@ -14,22 +14,47 @@
 }
 .title {
   margin-bottom: 12px;
+  margin-top: 12px;
   color: #000;
+  padding: 25px;
+  font-size: 30px;
+
 }
 .description {
+  color: #000;
+  font-size: 42px;
+  font-weight:600;
+}
+.highlight {
+  margin-bottom: 30px;
+  color:#4e4eff;
+  font-size: 45px;
+  font-weight:700; /* 设置背景颜色为黄色 */
+  display: inline-block;
+
+}
+.extradescription {
   margin-bottom: 8px;
   color: #000;
 }
 .bg {
   width: 100vw;
   height: 100vh;
-  background-color: #f1f1f1;
+  background-color: rgb(255, 255, 255);
 }
-.description a {
+.extradescription a {
   color: blue;
   text-decoration: underline;
 }
 
-.description a:hover {
+.extradescription a:hover {
   color: darkblue;
+}
+
+.picture{
+  width: 850px;
+}
+.classContainer{
+  height: 100hv;
+  overflow: auto;
 }

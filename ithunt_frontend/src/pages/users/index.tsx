@@ -71,16 +71,17 @@ export default function Home() {
     total: 0,
   });
 
-  async function fetchData(value?: any) {
-    const res = await getUserAllList();
-    const { data } = res;
-    console.log(
+  async function fetchData(value?: UserQueryType) {
+    const res = await getUserList(
+        {pageNum: 1,
+        pageSize: 20});
+    /*console.log(
         "%c[res]-2",
         "font-size:13px; background:pink; color:#000",
         res
-    );
+    );*/
 
-    setData(data);
+    setData(res.data.records);
     setPagination({ ...pagination, pageNum: 1, total: res.total });
   }
 
@@ -90,12 +91,12 @@ export default function Home() {
       pageNum: 1,
       pageSize: pagination.pageSize,
     });
-    console.log(
+    /*console.log(
       "%c[res.data]-21",
       "font-size:13px; background:pink; color:#000",
       res.data
-    );
-    setData(res.data.list);
+    );*/
+    setData(res.data.records);
     setPagination({ ...pagination, pageNum: 1, total: res.data.total });
   };
   const handleSearchReset = () => {
@@ -170,8 +171,8 @@ export default function Home() {
         form={form}
         onFinish={handleSearchFinish}
         initialValues={{
-          email: "",
-          role: "",
+          email: " ",
+          role: " ",
         }}
       >
         <Row gutter={24}>

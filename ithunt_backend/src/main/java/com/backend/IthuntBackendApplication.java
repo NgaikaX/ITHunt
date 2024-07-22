@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class IthuntBackendApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(IthuntBackendApplication.class, args);
 	}
 

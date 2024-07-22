@@ -1,9 +1,14 @@
 package com.backend.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.backend.common.Result;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.backend.entity.User;
+import com.backend.service.UserService;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+
+import static com.backend.common.enums.ResultCodeEnum.PARAM_LOST_ERROR;
 
 /**
  * Function:
@@ -13,12 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class WebController {
+    @Resource
+    UserService userService;
+
     @RequestMapping
     public Result hello(String name){
         return Result.success(name);
     }
-    @GetMapping("/test")
-    public Result test(String name){
-        return Result.success(name);
+
+
+    @PostMapping("/login")
+    public Result login(@RequestBody User user) {
+        if (StrUtil.isBlank(user.getEmail()) || StrUtil.isBlank(user.getPassword())) {
+            return Result.error(PARAM_LOST_ERROR);
+        }
+        user = userService.login(user);
+        return Result.success(user);
     }
 }

@@ -1,13 +1,15 @@
 package com.backend.controller;
 
-import com.backend.common.Page;
+import cn.hutool.core.util.StrUtil;
 import com.backend.common.Result;
 import com.backend.entity.User;
 import com.backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 
@@ -23,7 +25,7 @@ import static com.backend.common.enums.ResultCodeEnum.SYSTEM_ERROR;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
+    @Resource
     UserService userService;
     /**
      * Add user
@@ -31,7 +33,7 @@ public class UserController {
     @PostMapping("/add")
     public Result add(@RequestBody User user){
         try {
-            userService.insterUser(user);
+            userService.save(user);
 
         }catch (Exception e){
             if(e instanceof DuplicateKeyException){
@@ -49,7 +51,7 @@ public class UserController {
     @PutMapping("/edit")
     public Result edit(@RequestBody User user){
 
-        userService.editUser(user);
+        userService.updateById(user);
         return Result.success();
     }
 
@@ -59,7 +61,7 @@ public class UserController {
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Integer id){
 
-        userService.deleteUser(id);
+        userService.removeById(id);
         return Result.success();
     }
 
@@ -68,26 +70,24 @@ public class UserController {
      * */
     @GetMapping ("/selectAll")
     public Result selectAll(){
-
-        List<User> userList =userService.selectAllUser();
+        List<User> userList = userService.list(new QueryWrapper<User>().orderByDesc("id"));
         return Result.success(userList);
     }
 
-    /**
-     * query user by username or role
-     * */
-    @GetMapping ("/selectByMul")
-    public Result selectByMul(@RequestParam String username,@RequestParam String role){
-
-        List<User> userList =userService.selectByMul(username,role);
-        return Result.success(userList);
-    }
     /**
      * pagination
      * */
     @GetMapping ("/selectByPage")
-    public Result selectByPage( @RequestParam String username, @RequestParam String role,@RequestParam Integer pageNum,@RequestParam Integer pageSize){
-        Page<User> page = userService.selectByPage(username,role,pageNum,pageSize);
+    public Result selectByPage( @RequestParam(required = false) String username, @RequestParam(required = false) String role,@RequestParam Integer pageNum,@RequestParam Integer pageSize){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<User>().orderByDesc("id");
+        if (StrUtil.isNotBlank(username)) {
+            queryWrapper.eq("username", username);
+        }
+        if (StrUtil.isNotBlank(role)) {
+            queryWrapper.eq("role", role);
+        }
+
+        Page<User> page = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
         return Result.success(page);
     }
 }
