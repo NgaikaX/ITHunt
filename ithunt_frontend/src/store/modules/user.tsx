@@ -1,8 +1,13 @@
-// src/store/modules/user.ts
+// src/store/modules/user.tsx
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserType } from "@/type";
+import {UserLoginType, UserType} from "@/type";
 import { RootState } from ".";
+import { getToken, removeToken, setToken } from "@/utils";
+import {getUserDetails, userLogin} from "@/api";
+
+const isBrowser = typeof window !== "undefined";
+
 
 const userSlice = createSlice({
   name: "user",
@@ -13,7 +18,8 @@ const userSlice = createSlice({
     uploaddate: "",
     id: "",
     status: "",
-    username: "User",
+    username: "",
+    token: getToken() || ""
   },
   reducers: {
     loginUser(state, action: PayloadAction<UserType>) {
@@ -23,21 +29,41 @@ const userSlice = createSlice({
       state.id = action.payload.id;
       state.status = action.payload.status;
       state.username = action.payload.username;
-      console.log("state:", state);
+      state.token = action.payload.token;
+      if (isBrowser) {
+        setToken(action.payload.token);//set token to the local storage
+      }
+      console.log("state after loginUser:", state);
     },
     logoutUser(state) {
       state.email = "";
       state.password = "";
       state.role = "";
-      (state.uploaddate = ""), (state.id = "");
+      state.uploaddate = "";
+      state.id = "";
       state.status = "";
-      state.username = "User";
+      state.username = "";
+      state.token = "";
+      if (isBrowser) {
+        removeToken();
+      }
     },
   },
 });
 
-export const { loginUser, logoutUser } = userSlice.actions;
+
+
+const { loginUser, logoutUser } = userSlice.actions;
+
+const fetchLogin = (values: UserLoginType) => {
+  return async (dispatch) => {
+    const res = await userLogin(values);
+    dispatch(loginUser(res.data as UserType));
+  };
+};
+export {loginUser,logoutUser,fetchLogin}
 
 export const selectUserRole = (state: RootState) => state.user.role;
 export const selectUserName = (state: RootState) => state.user.username;
+export const selectUserToken = (state: RootState) => state.user.token;
 export default userSlice.reducer;

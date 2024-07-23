@@ -20,7 +20,7 @@ export async function userAdd(params: UserType) {
 }
 
 export async function getUserDetails(id: string) {
-  return request.get(`/api/user/${id}`);
+  return request.get(`/user/details/${id}`);
 }
 
 export async function userDelete(id: string) {
@@ -28,7 +28,7 @@ export async function userDelete(id: string) {
 }
 
 export async function userUpdate(params: UserType) {
-  return request.put(`/user/edit`, params);
+  return request.put(`/user/update`, params);
 }
 
 export async function userLogin(params: Pick<UserType, "email" | "password">) {

@@ -1,15 +1,27 @@
+// src/utils/token.ts
 const TOKENKEY = "token_key";
 
-function setToken(token: string) {
-  return localStorage.setItem(TOKENKEY, token);
+function setToken(token) {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(TOKENKEY, token);
+    console.log("Token set in localStorage:", localStorage.getItem(TOKENKEY));
+  }
 }
 
 function getToken() {
-  return localStorage.getItem(TOKENKEY);
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem(TOKENKEY);
+    console.log("getToken() called, token:", token);
+    return token;
+  }
+  return null;
 }
 
 function removeToken() {
-  return localStorage.removeItem(TOKENKEY);
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(TOKENKEY);
+    console.log("Token removed from localStorage");
+  }
 }
 
 export { setToken, getToken, removeToken };

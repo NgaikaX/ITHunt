@@ -20,6 +20,7 @@ export interface UserType {
   status: USER_STATUS;
   password: string;
   id: number;
+  token: string;
 }
 export interface UserLoginType {
   email: string;

@@ -3,10 +3,8 @@ import styles from "./index.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { UserLoginType, UserType } from "@/type";
-import request from "@/utils/request";
 import { useDispatch, useSelector } from "react-redux";
-import { userLogin } from "@/api";
-import { loginUser } from "@/store/modules/user";
+import {fetchLogin} from "@/store/modules/user";
 import { RootState } from "@/store";
 import { USER_ROLE } from "@/constants";
 
@@ -15,26 +13,22 @@ export default function Home() {
   const dispatch = useDispatch();
   const userRole = useSelector((state: RootState) => state.user.role);
 
-  const handleFinish = async (values: UserLoginType) => {
+  const handleFinish = (values: UserLoginType) => {
     try {
-      const res = await userLogin(values);
-      console.log(
+      //const res = await userLogin(values);
+      dispatch(fetchLogin(values));
+      message.success("Log in successfully");
+      userRole === USER_ROLE.STU
+          ? router.push("dashboard")
+          : router.push("users");
+      /*console.log(
         "%c [ res ]-17",
         "font-size:13px; background:pink; color:#bf2c9f;",
         res.data
-      );
-      //localStorage.setItem("user", JSON.stringify(res));
-      if(res.code==200){
-        message.success("Log in successfully");
-        dispatch(loginUser(res.data as UserType));
-        userRole === USER_ROLE.STU
-            ? router.push("dashboard")
-            : router.push("users");
-      }else{
-        message.error(res.msg)
-      }
+      );*/
 
     } catch (error) {
+      message.error("Login failed");
       console.error(error);
     }
   };

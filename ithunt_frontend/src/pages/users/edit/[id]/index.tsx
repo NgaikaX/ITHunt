@@ -12,11 +12,11 @@ export default function Home() {
     if (id) {
       getUserDetails(id as string).then((res) => {
         setData(res.data);
-        /*console.log(
+        console.log(
           "%c[res]-21",
           "font-size:13px; background:pink; color:#000",
           res
-        );*/
+        );
       });
     }
   }, [id]);

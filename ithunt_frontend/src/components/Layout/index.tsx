@@ -28,6 +28,7 @@ import { RootState } from "@/store/modules";
 import { USER_ROLE } from "@/constants";
 import { useAppDispatch } from "@/store";
 import { fetchMessages } from "@/store/modules/messages";
+import {fetchLogin, logoutUser} from "@/store/modules/user";
 
 const { Header, Content, Sider } = Antdlayout;
 
@@ -127,18 +128,11 @@ const ITEMS = [
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const userRole = useSelector((state: RootState) => state.user.role);
   const userName = useSelector((state: RootState) => state.user.username);
-  console.log("user name:", userName);
   const router = useRouter();
-  //const user = useCurrentUser();
-  console.log("user:", userRole);
 
   const activeMenu = router.pathname;
   const defaultOpenKeys = [activeMenu.split("/")[1]];
   const [modalVisible, setModalVisible] = useState(false);
-  const contentPage =
-    router.pathname === "/dashboard" ||
-    router.pathname === "/course" ||
-    router.pathname === "/course/details/[]";
 
   const USER_ITEMS = useMemo(
     () => [
@@ -152,6 +146,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
             onClick={async () => {
               //await userLogout();
               message.success("Log out successfully");
+              dispatch(logoutUser());
               router.push("/login");
             }}
           >
@@ -188,10 +183,6 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     router.push(`http://localhost:3000/${key}`);
   };
 
-  /*const onClick: MenuProps["onClick"] = ({ key }) => {
-    //message.info(`Click on item ${key}`);
-    router.push(key);
-  };*/
 
   //notifications
   const dispatch = useAppDispatch();
@@ -204,6 +195,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const [selectedMessage, setSelectedMessage] = useState<string>("");
 
   useEffect(() => {
+
     setInitLoading(false);
     if (modalVisible) {
       dispatch(fetchMessages());
