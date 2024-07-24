@@ -18,24 +18,21 @@ interface AxiosInstanceType extends AxiosInstance {
 export const CreateAxiosInstance = (config?: AxiosRequestConfig): AxiosInstanceType => {
     const instance = axios.create({
         baseURL: "http://localhost:9090/",
-        timeout: 5000,
+        timeout: 30000,
         ...config,
     }) as AxiosInstanceType;
 
     instance.interceptors.request.use(
         function (config: any) {
-            // 合并请求头
             config.headers['Content-Type'] = 'application/json;charset=utf-8';
             const token = getToken();
-            //const token = localStorage.getItem("token_key") || "{}";
             if(token){
                 config.headers['token'] = token;
-                //config.headers.Authorization = `Bearer ${token}`
             }
             return config;
         },
         function (error) {
-            // 处理错误请求
+            // handle error request
             return Promise.reject(error);
         }
     );

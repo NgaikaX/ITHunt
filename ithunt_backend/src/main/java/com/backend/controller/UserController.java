@@ -14,6 +14,7 @@ import java.util.List;
 
 
 import static com.backend.common.enums.ResultCodeEnum.SYSTEM_ERROR;
+import static com.baomidou.mybatisplus.extension.toolkit.Db.getOne;
 
 /**
  * Function:
@@ -48,7 +49,7 @@ public class UserController {
     /**
      * edit user
      * */
-    @PutMapping("/edit")
+    @PutMapping("/update")
     public Result edit(@RequestBody User user){
 
         userService.updateById(user);
@@ -90,4 +91,15 @@ public class UserController {
         Page<User> page = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
         return Result.success(page);
     }
+    @GetMapping ("/details/{id}")
+    public Result details(@PathVariable Integer id){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("email", id);
+        User user = getOne(queryWrapper);
+        // Query the user information in the database based on email
+        return Result.success(user);
+    }
+
+
+
 }

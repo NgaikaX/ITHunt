@@ -15,7 +15,6 @@ export default function Home() {
 
   const handleFinish = (values: UserLoginType) => {
     try {
-      //const res = await userLogin(values);
       dispatch(fetchLogin(values));
       message.success("Log in successfully");
       userRole === USER_ROLE.STU

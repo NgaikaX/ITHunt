@@ -3,6 +3,7 @@ package com.backend.service;
 import com.backend.entity.User;
 import com.backend.exception.ServiceException;
 import com.backend.mapper.UserMapper;
+import com.backend.utils.TokenUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,9 +38,9 @@ public class UserService extends ServiceImpl<UserMapper,User> {
         if (!user.getPassword().equals(dbUser.getPassword())) {
             throw new ServiceException("Wrong email or password");
         }
-        if(!user.getRole().equals("on")){
-            throw new ServiceException("This account has been disabled");
-        }
+        //create Token
+        String token =TokenUtils.createToken(dbUser.getId().toString(),dbUser.getPassword());
+        dbUser.setToken(token);
         return dbUser;
     }
 
