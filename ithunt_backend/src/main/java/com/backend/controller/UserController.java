@@ -1,6 +1,7 @@
 package com.backend.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.backend.common.AuthAccess;
 import com.backend.common.Result;
 import com.backend.entity.User;
 import com.backend.service.UserService;
@@ -24,6 +25,7 @@ import static com.baomidou.mybatisplus.extension.toolkit.Db.getOne;
 
 @CrossOrigin
 @RestController
+
 @RequestMapping("/user")
 public class UserController {
     @Resource
@@ -91,15 +93,15 @@ public class UserController {
         Page<User> page = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
         return Result.success(page);
     }
+
+    @AuthAccess
     @GetMapping ("/details/{id}")
-    public Result details(@PathVariable Integer id){
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("email", id);
-        User user = getOne(queryWrapper);
-        // Query the user information in the database based on email
+    public Result details(@PathVariable Integer id) {
+        System.out.println("Received request for user ID: " + id);
+        User user = userService.getById(id);
+        System.out.println("Fetched user details: " + user);
         return Result.success(user);
     }
-
 
 
 }

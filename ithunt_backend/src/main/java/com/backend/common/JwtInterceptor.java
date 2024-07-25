@@ -41,7 +41,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         }
         // 执行认证
         if (StrUtil.isBlank(token)) {
-            throw new ServiceException("401", "Please log in");
+            throw new ServiceException("401", "JWT Please log in");
         }
         // 获取 token 中的 user id
         String userId;

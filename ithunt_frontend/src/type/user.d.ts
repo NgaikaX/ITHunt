@@ -27,7 +27,7 @@ export interface UserLoginType {
   password: string;
 }
 export interface UserInfoType {
-  userId: string;
+  userId: number;
   username: string;
   language: LANGUAGE;
   interests: string[];

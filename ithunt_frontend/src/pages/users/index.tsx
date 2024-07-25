@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import styles from "./index.module.css";
 import router from "next/router";
 
-import {getUserAllList, getUserList, userDelete} from "@/api";
+import { getUserList, userDelete } from "@/api";
 import { UserQueryType, UserType } from "@/type";
 import { USER_ROLE, USER_STATUS } from "@/constants";
 
@@ -65,24 +65,22 @@ export default function Home() {
   const Option = Select.Option;
   const [form] = Form.useForm();
   const [pagination, setPagination] = useState<TablePaginationConfig>({
-    pageNum: 1,
+    current: 1,
     pageSize: 20,
     showSizeChanger: true,
     total: 0,
   });
 
   async function fetchData(value?: UserQueryType) {
-    const res = await getUserList(
-        {pageNum: 1,
-        pageSize: 20});
+    const res = await getUserList({ pageNum: 1, pageSize: 20 });
     /*console.log(
         "%c[res]-2",
         "font-size:13px; background:pink; color:#000",
         res
     );*/
-
+    setData(res.data);
     setData(res.data.records);
-    setPagination({ ...pagination, pageNum: 1, total: res.total });
+    //setPagination({ ...pagination, current: 1, total: res.total });
   }
 
   const handleSearchFinish = async (values: UserQueryType) => {
@@ -91,13 +89,15 @@ export default function Home() {
       pageNum: 1,
       pageSize: pagination.pageSize,
     });
-    /*console.log(
+    console.log(
       "%c[res.data]-21",
       "font-size:13px; background:pink; color:#000",
       res.data
-    );*/
+    );
     setData(res.data.records);
-    setPagination({ ...pagination, pageNum: 1, total: res.data.total });
+
+    //setData(res.data);
+    setPagination({ ...pagination, current: 1, total: res.data.total });
   };
   const handleSearchReset = () => {
     //console.log(form);
@@ -107,7 +107,7 @@ export default function Home() {
     setPagination(pagination);
     const query = form.getFieldsValue();
     getUserList({
-      pageNum: pagination.pageNum,
+      pageNum: pagination.current,
       pageSize: pagination.pageSize,
       ...query,
     });
@@ -115,10 +115,11 @@ export default function Home() {
   const handleUserAdd = () => {
     router.push("/users/add");
   };
-  const handleUserEdit = (id: string) => {
+  const handleUserEdit = (id: number) => {
+    console.log("Navigating to:", `/users/edit/${id}`); // 在这里验证 URL
     router.push(`/users/edit/${id}`);
   };
-  const handleUserDelete = async (id: string) => {
+  const handleUserDelete = async (id: number) => {
     console.log(id);
     await userDelete(id);
     message.success("Delete Sucessfully");
@@ -154,8 +155,6 @@ export default function Home() {
       },
     },
   ];
-
-
 
   const [data, setData] = useState([]);
 

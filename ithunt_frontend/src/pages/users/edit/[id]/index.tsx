@@ -7,18 +7,21 @@ export default function Home() {
   const router = useRouter();
   const id = router.query.id;
   const [data, setData] = useState();
+  console.log("Router query outside useEffect:", router.query);
 
-  useEffect(() => {
-    if (id) {
-      getUserDetails(id as string).then((res) => {
-        setData(res.data);
-        console.log(
-          "%c[res]-21",
-          "font-size:13px; background:pink; color:#000",
-          res
-        );
-      });
-    }
-  }, [id]);
-  return <UserForm editData={data} />;
+    useEffect(() => {
+        if (id) {
+            getUserDetails(Number(id)).then((res) => {
+                setData(res.data);
+                /*console.log(
+                  "%c[res]-21",
+                  "font-size:13px; background:pink; color:#000",
+                  res
+                );*/
+            });
+        }
+    }, [id]);
+
+
+    return <UserForm editData={data} />;
 }

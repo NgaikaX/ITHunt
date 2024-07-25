@@ -9,30 +9,33 @@ import {
 import qs from "qs";
 import axios from "axios";
 
-
-
 export async function getUserList(params?: UserQueryType) {
   return request.get(`/user/selectByPage?${qs.stringify(params)}`);
   //return request.get(`/api/user?${qs.stringify(params)}`);
 }
 export async function userAdd(params: UserType) {
   return request.post("/user/add", params);
+  //return request.post("/api/user", params);
 }
 
-export async function getUserDetails(id: string) {
-  return request.get(`/user/details/${id}`);
+export async function getUserDetails(id: number) {
+  return request.get(`http://localhost:9090/user/details/${id}`);
+  //return request.get(`/api/user/${id}`);
 }
 
-export async function userDelete(id: string) {
+export async function userDelete(id: number) {
   return request.delete(`/user/delete/${id}`);
+  //return request.delete(`/api/user/${id}`);
 }
 
 export async function userUpdate(params: UserType) {
   return request.put(`/user/update`, params);
+  //return request.put(`/api/user`, params);
 }
 
 export async function userLogin(params: Pick<UserType, "email" | "password">) {
   return request.post("/login", params);
+  //return request.post("/api/login", params);
 }
 export async function userLogout() {
   return request.get("/api/logout");

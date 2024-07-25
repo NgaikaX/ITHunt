@@ -99,7 +99,7 @@ const ITEMS = [
     ],
   },
   {
-    key: "/academic",
+    key: "academic",
     label: "Academic Support",
     icon: <ToolOutlined />,
     role: USER_ROLE.STU,
@@ -118,7 +118,7 @@ const ITEMS = [
   },
 
   {
-    key: "/users",
+    key: "users",
     label: "Users",
     icon: <TeamOutlined />,
     role: USER_ROLE.ADMIN,
