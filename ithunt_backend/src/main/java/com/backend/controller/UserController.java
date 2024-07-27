@@ -51,8 +51,9 @@ public class UserController {
     /**
      * edit user
      * */
+    @AuthAccess
     @PutMapping("/update")
-    public Result edit(@RequestBody User user){
+    public Result update(@RequestBody User user){
 
         userService.updateById(user);
         return Result.success();

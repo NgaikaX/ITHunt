@@ -39,7 +39,7 @@ const COLUMNS = [
     dataIndex: "description",
     key: "description",
     ellipsis: true,
-    width: 400,
+    width: 350,
     render: (text: string) => {
       return (
         <Tooltip title={text} placement="topLeft">

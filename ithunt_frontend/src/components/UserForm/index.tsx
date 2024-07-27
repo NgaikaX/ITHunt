@@ -1,10 +1,10 @@
-import { Button, Form, Input, Radio, Space, message } from "antd";
+import {Button, Form, Input, Radio, Space, message, RadioChangeEvent} from "antd";
 
 import { UserType } from "@/type";
 import { useRouter } from "next/router";
 import { userAdd, userUpdate } from "@/api";
 import { USER_ROLE, USER_STATUS } from "@/constants";
-import { useEffect } from "react";
+import {useEffect, useState} from "react";
 
 export default function QuestionForm({
   editData = {
@@ -16,19 +16,34 @@ export default function QuestionForm({
 }) {
   const [form] = Form.useForm();
   const router = useRouter();
+  const [role, setRole] = useState(editData.role || "student");
+  const [status, setStatus] = useState(editData.status || "on");
+
+  const handleStatusChange = ({ target: { value } }: RadioChangeEvent) => {
+    console.log('status checked', value);
+    setStatus(value);
+    console.log('status', status);
+  };
+
+  const handleRoleChange = ({ target: { value } }: RadioChangeEvent) => {
+    console.log('role checked', value);
+    setRole(value);
+  };
 
   //console.log("Initial values passed to the component:", editData);
 
   useEffect(() => {
     if (editData.id) {
       form.setFieldsValue(editData);
+      console.log("editData",editData);
     }
     //console.log("Edit data set in form:", editData);
   }, [editData, form]);
 
   const handleFinish = async (values: UserType) => {
     if (editData?.id) {
-      await userUpdate(values);
+      console.log("before",values);
+      await userUpdate({ ...editData, ...values });// Merge editData with form values
     } else {
       await userAdd(values);
     }
@@ -38,6 +53,7 @@ export default function QuestionForm({
   const handleCancel = () => {
     router.push("/users");
   };
+
 
   return (
     <>
@@ -67,13 +83,13 @@ export default function QuestionForm({
           name="status"
           rules={[{ required: true }]}
         >
-          <Radio.Group>
+          <Radio.Group onChange={handleStatusChange} value={status}>
             <Radio value="on">ON</Radio>
             <Radio value="off">OFF</Radio>
           </Radio.Group>
         </Form.Item>
         <Form.Item label="User Role" name="role" rules={[{ required: true }]}>
-          <Radio.Group>
+          <Radio.Group onChange={handleRoleChange} value={role}>
             <Radio value="student">Student</Radio>
             <Radio value="admin">Admin</Radio>
           </Radio.Group>
