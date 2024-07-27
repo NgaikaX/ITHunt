@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { userAdd, userUpdate } from "@/api";
 import { USER_ROLE, USER_STATUS } from "@/constants";
 import {useEffect, useState} from "react";
+import {formatTimestamp} from "@/utils";
 
 export default function QuestionForm({
   editData = {
@@ -22,7 +23,6 @@ export default function QuestionForm({
   const handleStatusChange = ({ target: { value } }: RadioChangeEvent) => {
     console.log('status checked', value);
     setStatus(value);
-    console.log('status', status);
   };
 
   const handleRoleChange = ({ target: { value } }: RadioChangeEvent) => {
@@ -41,6 +41,8 @@ export default function QuestionForm({
   }, [editData, form]);
 
   const handleFinish = async (values: UserType) => {
+    // Add the current date and time to values
+    values.uploaddate = formatTimestamp(Date.now());  // Set current date and time
     if (editData?.id) {
       console.log("before",values);
       await userUpdate({ ...editData, ...values });// Merge editData with form values

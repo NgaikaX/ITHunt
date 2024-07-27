@@ -57,7 +57,7 @@ export default function CourseForm() {
         const uploadData = await coverUpload(formData as FormData);
         //console.log("uploadData", uploadData); // 打印上传响应数据
         coverUrl = uploadData.data; // 根据返回的数据结构获取URL
-        uploadDate = formatTimestamp(file.lastModified);
+        uploadDate = formatTimestamp(Date.now());
       }
       values.cover = coverUrl;
       values.uploaddate= uploadDate;
@@ -141,7 +141,6 @@ export default function CourseForm() {
               name="cover"
               listType="picture-card"
               className="avatar-uploader"
-              //action="http://localhost:9090/course/upload"
               showUploadList={false}
               beforeUpload={beforeUpload}
               onChange={handleChange}
