@@ -17,7 +17,7 @@ export default function CourseDetail() {
 
   useEffect(() => {
     if (id) {
-      getCourseDetails(id as string).then((res) => {
+      getCourseDetails(id as number).then((res) => {
         setCourse(res.data);
       });
       getFeedback(id as string).then((fb) => {

@@ -28,13 +28,16 @@ interface AxiosInstanceType extends AxiosInstance {
 }
 
 export const CreateAxiosInstance = (
-  config?: AxiosRequestConfig
+    config?: AxiosRequestConfig
 ): AxiosInstanceType => {
-  const instance = axios.create({
-    baseURL: "http://localhost:9090/",
-    timeout: 30000,
-    ...config,
-  }) as AxiosInstanceType;
+    const instance = axios.create({
+        baseURL: "http://localhost:9090/",
+        timeout: 30000,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        ...config,
+    }) as AxiosInstanceType;
 
   instance.interceptors.request.use(
     function (config: any) {
@@ -52,25 +55,16 @@ export const CreateAxiosInstance = (
   );
 
   instance.interceptors.response.use(
-    function (response) {
-      const { status, data, message } = response as any;
-      if (status === 200) {
-        return data; // if success return data
-      } else if (status === 401) {
-        // No permission or not logged in
-        return Router.push("/login");
-      } else {
-        // other error
-        AntdMessage.error(message || "Server exception");
+      function (response) {
+          return response.data; // Always return response data
+      },
+      function (error) {
+          if (error.response && error.response.status === 401) {
+              Router.push("/login");
+          }
+          AntdMessage.error(error?.response?.data?.message || "Server exception");
+          return Promise.reject(error);
       }
-    },
-    function (error) {
-      if (error.response && error.response.status === 401) {
-        return Router.push("/login");
-      }
-      AntdMessage.error(error?.response?.data?.message || "Server exception");
-      return Promise.reject(error);
-    }
   );
 
   return instance;

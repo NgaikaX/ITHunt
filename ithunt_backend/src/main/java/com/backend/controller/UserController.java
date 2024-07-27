@@ -93,13 +93,12 @@ public class UserController {
         Page<User> page = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
         return Result.success(page);
     }
-
-    @AuthAccess
+    /**
+     * get user details by id
+     * */
     @GetMapping ("/details/{id}")
     public Result details(@PathVariable Integer id) {
-        System.out.println("Received request for user ID: " + id);
         User user = userService.getById(id);
-        System.out.println("Fetched user details: " + user);
         return Result.success(user);
     }
 

@@ -11,19 +11,21 @@ import {
   message,
 } from "antd";
 import styles from "./index.module.css";
-import { courseAdd } from "@/api/course";
+import {courseAdd, coverUpload} from "@/api/course";
 import { CourseType } from "@/type";
 import { useRouter } from "next/router";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import {formatTimestamp} from "@/utils";
 
 const { TextArea } = Input;
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-const getBase64 = (img: FileType, callback: (url: string) => void) => {
+const getBase64 = (img, callback: (url: string) => void) => {
   const reader = new FileReader();
   reader.addEventListener("load", () => callback(reader.result as string));
   reader.readAsDataURL(img);
 };
-const beforeUpload = (file: FileType) => {
+const beforeUpload = (file) => {
+  console.log(file)
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
   if (!isJpgOrPng) {
     message.error("You can only upload JPG/PNG file!");
@@ -40,36 +42,53 @@ export default function CourseForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
+  const [fileList, setFileList] = useState<File[]>([]);
+
+
 
   const handleFinish = async (values: CourseType) => {
-    console.log(
-      "%c[values]-21",
-      "font-size:13px; background:pink; color:#000",
-      values
-    );
-    await courseAdd(values);
-    message.success("Create Sucessfully");
-    router.push("/course/list");
+    setLoading(true);
+      let coverUrl: string;
+      let uploadDate: string;
+      if (fileList.length > 0) {
+        const file = fileList[0];
+        const formData = new FormData();
+        formData.append("cover", fileList[0]);
+        const uploadData = await coverUpload(formData as FormData);
+        //console.log("uploadData", uploadData); // 打印上传响应数据
+        coverUrl = uploadData.data; // 根据返回的数据结构获取URL
+        uploadDate = formatTimestamp(file.lastModified);
+      }
+      values.cover = coverUrl;
+      values.uploaddate= uploadDate;
+      await courseAdd(values);
+      message.success("Course created successfully");
+      router.push("/course/list");
+      setLoading(false);
   };
+
   const handleCancel = () => {
     router.push("/course/list");
   };
 
-  const handleChange: UploadProps["onChange"] = (info) => {
-    console.log(info);
-
+  const handleChange = (info: any) => {
     if (info.file.status === "uploading") {
       setLoading(true);
       return;
     }
     if (info.file.status === "done") {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoading(false);
-        setImageUrl(url);
-      });
+      setFileList([info.file.originFileObj]);
+      const reader = new FileReader();
+      reader.onload = () => setImageUrl(reader.result as string);
+      reader.readAsDataURL(info.file.originFileObj);
+      setLoading(false);
+    }
+    if (info.file.status === "error") {
+      setLoading(false);
+      message.error("Upload failed.");
     }
   };
+
   const uploadButton = (
     <button
       style={{
@@ -119,15 +138,17 @@ export default function CourseForm() {
         <Form.Item label="Cover" name="cover" rules={[{ required: true }]}>
           <Space direction="vertical" style={{ width: "100%" }} size="large">
             <Upload
-              name="avatar"
+              name="cover"
               listType="picture-card"
               className="avatar-uploader"
+              //action="http://localhost:9090/course/upload"
               showUploadList={false}
               beforeUpload={beforeUpload}
               onChange={handleChange}
             >
               {imageUrl ? (
                 <img src={imageUrl} alt="cover" className={styles.cover} />
+
               ) : (
                 uploadButton
               )}

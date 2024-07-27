@@ -65,39 +65,24 @@ export default function Home() {
   const Option = Select.Option;
   const [form] = Form.useForm();
   const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
+    pageNum: 1,
     pageSize: 20,
     showSizeChanger: true,
     total: 0,
   });
 
-  async function fetchData(value?: UserQueryType) {
-    const res = await getUserList({ pageNum: 1, pageSize: 20 });
-    /*console.log(
-        "%c[res]-2",
-        "font-size:13px; background:pink; color:#000",
-        res
-    );*/
-    setData(res.data);
+  async function fetchData(values?: UserQueryType) {
+    const res = await getUserList({
+      ...values,
+      pageNum: pagination.pageNum,
+      pageSize: pagination.pageSize});
+    console.log("%c[res.data]-21", res.data);
     setData(res.data.records);
-    //setPagination({ ...pagination, current: 1, total: res.total });
+    setPagination({ ...pagination, current: 1, total: res.data.total });
   }
 
   const handleSearchFinish = async (values: UserQueryType) => {
-    const res = await getUserList({
-      ...values,
-      pageNum: 1,
-      pageSize: pagination.pageSize,
-    });
-    console.log(
-      "%c[res.data]-21",
-      "font-size:13px; background:pink; color:#000",
-      res.data
-    );
-    setData(res.data.records);
-
-    //setData(res.data);
-    setPagination({ ...pagination, current: 1, total: res.data.total });
+    fetchData(values)
   };
   const handleSearchReset = () => {
     //console.log(form);

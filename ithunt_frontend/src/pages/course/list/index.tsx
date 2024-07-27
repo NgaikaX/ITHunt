@@ -58,27 +58,26 @@ const COLUMNS = [
 
 export default function Home() {
   const [form] = Form.useForm();
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 20,
+    showSizeChanger: true,
+    total: 0,
+  });
   async function fetchData(search?: CourseQueryType) {
     const res = await getCourseList({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
       ...search,
+      current: pagination.current,
+      pageSize: pagination.pageSize
     });
-    const { data } = res;
-    setData(data);
+    console.log("%c[res]-2", res);
+    setData(res.data.records);
     setPagination({ ...pagination, total: res.total });
   }
   const handleSearchFinish = async (values: CourseQueryType) => {
-    const res = await getCourseList({
-      ...values,
-      current: 1,
-      pageSize: pagination.pageSize,
-    });
-    setData(res.data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    fetchData(values)
   };
   const handleSearchReset = () => {
-    //console.log(form);
     form.resetFields();
   };
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -93,10 +92,10 @@ export default function Home() {
   const handleCourseAdd = () => {
     router.push("/course/add");
   };
-  const handleCourseEdit = (id: string) => {
+  const handleCourseEdit = (id: number) => {
     router.push(`/course/edit/${id}`);
   };
-  const handleCourseDelete = async (id: string) => {
+  const handleCourseDelete = async (id: number) => {
     //console.log(id);
     await courseDelete(id);
     message.success("Delete Sucessfully");
@@ -133,15 +132,8 @@ export default function Home() {
       },
     },
   ];
-
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 20,
-    showSizeChanger: true,
-    total: 0,
-  });
-
   const [data, setData] = useState([]);
+
   useEffect(() => {
     fetchData();
   }, []);

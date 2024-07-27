@@ -8,7 +8,8 @@ export interface CourseType {
   cover: string;
   description: string;
   lecturer: string;
-  id?: string;
+  uploaddate: string;
+  id?: number;
 }
 export interface FeedbackQueryType {
   coursename?: string;

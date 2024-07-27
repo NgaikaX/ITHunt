@@ -1,23 +1,38 @@
 import request from "./../utils/request";
 import { CourseQueryType, CourseType, FeedbackQueryType } from "./../type";
 import qs from "qs";
+import axios from "axios";
 
 export async function getCourseList(params?: CourseQueryType) {
-  return request.get(`/api/courses?${qs.stringify(params)}`);
+  return request.get(`/course/courseList?${qs.stringify(params)}`);
 }
+export async function getAllCourseList() {
+  return request.get(`/course/allCourse`);
+}
+
 export async function courseAdd(params: CourseType) {
-  return request.post("/api/courses", params);
+  return request.post("/course/add", params);
 }
 export async function getFeedbackList(params?: FeedbackQueryType) {
   return request.get(`/api/feedback?${qs.stringify(params)}`);
 }
 
 export async function courseDelete(id: string) {
-  return request.delete(`/api/courses/${id}`);
+  return request.delete(`/course/delete/${id}`);
 }
-export async function getCourseDetails(id: string) {
-  return request.get(`/api/courses/${id}`);
+export async function getCourseDetails(id: number) {
+  return request.get(`/course/details/${id}`);
 }
 export async function getFeedback(id: string) {
   return request.get(`/api/feedback/${id}`);
 }
+// 抽取的封面上传函数
+export async function coverUpload(cover: FormData) {
+  return axios.post("http://localhost:9090/course/upload", cover, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }).then(response => response.data);
+}
+
+
