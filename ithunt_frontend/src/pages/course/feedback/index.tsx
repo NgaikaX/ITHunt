@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
 import { getFeedbackList } from "@/api/course";
-import { FeedbackQueryType } from "@/type";
+import {CourseQueryType, FeedbackQueryType} from "@/type";
 import router from "next/router";
 
 const COLUMNS = [
@@ -23,9 +23,9 @@ const COLUMNS = [
     width: 250,
   },
   {
-    title: "User ID",
-    dataIndex: "userid",
-    key: "userid",
+    title: "User Name",
+    dataIndex: "username",
+    key: "username",
     width: 150,
   },
   {
@@ -52,19 +52,41 @@ const COLUMNS = [
 
 export default function Home() {
   const [form] = Form.useForm();
-  const handleSearchFinish = async (values: FeedbackQueryType) => {
-    /*console.log(
-      "%c[values]-21",
-      "font-size:13px; background:pink; color:#000",
-      values
-    );*/
+  const [data, setData] = useState([]);
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 20,
+    showSizeChanger: true,
+    total: 0,
+  });
+  const columns = [
+    ...COLUMNS,
+    {
+      title: "Operation",
+      key: "operation",
+      render: (_: any, row: any) => {
+        return (
+            <Space>
+              <Button type="link" danger>
+                Delete
+              </Button>
+            </Space>
+        );
+      },
+    },
+  ];
+  async function fetchData(search?: FeedbackQueryType) {
     const res = await getFeedbackList({
-      ...values,
-      current: 1,
+      ...search,
+      current: pagination.current,
       pageSize: pagination.pageSize,
     });
-    setData(res.data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    setData(res.data.records);
+    setPagination({ ...pagination, total: res.data.total });
+  }
+  const handleSearchFinish = async (values: FeedbackQueryType) => {
+    //console.log("%c[values]-21",values);
+    fetchData(values);
   };
   const handleSearchReset = () => {
     console.log(form);
@@ -80,40 +102,9 @@ export default function Home() {
     });
   };
 
-  const columns = [
-    ...COLUMNS,
-    {
-      title: "Operation",
-      key: "operation",
-      render: (_: any, row: any) => {
-        return (
-          <Space>
-            <Button type="link" danger>
-              Delete
-            </Button>
-          </Space>
-        );
-      },
-    },
-  ];
 
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 20,
-    showSizeChanger: true,
-    total: 0,
-  });
 
-  const [data, setData] = useState([]);
   useEffect(() => {
-    async function fetchData() {
-      const res = await getFeedbackList({
-        current: 1,
-        pageSize: pagination.pageSize,
-      });
-      const { data } = res;
-      setData(data);
-    }
     fetchData();
   }, []);
 

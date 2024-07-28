@@ -58,12 +58,44 @@ const COLUMNS = [
 
 export default function Home() {
   const [form] = Form.useForm();
+  const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 20,
     showSizeChanger: true,
     total: 0,
   });
+  const columns = [
+    ...COLUMNS,
+    {
+      title: "Operation",
+      key: "operation",
+      render: (_: any, row: any) => {
+        //console.log(row);
+        return (
+            <Space>
+              <Button
+                  type="link"
+                  danger
+                  onClick={() => {
+                    handleCourseDelete(row.id);
+                  }}
+              >
+                Delete
+              </Button>
+              <Button
+                  type="link"
+                  onClick={() => {
+                    handleCourseEdit(row.id);
+                  }}
+              >
+                Edit
+              </Button>
+            </Space>
+        );
+      },
+    },
+  ];
   async function fetchData(search?: CourseQueryType) {
     const res = await getCourseList({
       ...search,
@@ -72,7 +104,7 @@ export default function Home() {
     });
     console.log("%c[res]-2", res);
     setData(res.data.records);
-    setPagination({ ...pagination, total: res.total });
+    setPagination({ ...pagination, total: res.data.total });
   }
   const handleSearchFinish = async (values: CourseQueryType) => {
     fetchData(values)
@@ -101,38 +133,6 @@ export default function Home() {
     message.success("Delete Sucessfully");
     fetchData(form.getFieldsValue());
   };
-  const columns = [
-    ...COLUMNS,
-    {
-      title: "Operation",
-      key: "operation",
-      render: (_: any, row: any) => {
-        //console.log(row);
-        return (
-          <Space>
-            <Button
-              type="link"
-              danger
-              onClick={() => {
-                handleCourseDelete(row.id);
-              }}
-            >
-              Delete
-            </Button>
-            <Button
-              type="link"
-              onClick={() => {
-                handleCourseEdit(row.id);
-              }}
-            >
-              Edit
-            </Button>
-          </Space>
-        );
-      },
-    },
-  ];
-  const [data, setData] = useState([]);
 
   useEffect(() => {
     fetchData();

@@ -13,12 +13,14 @@ export interface CourseType {
 }
 export interface FeedbackQueryType {
   coursename?: string;
-  course_id?: string;
+  course_id?: number;
   current?: number;
   pageSize?: number;
 }
 export interface FeedbackType {
-  course_id: string;
+  id?:number
+  course_id: number;
+  user_id: number;
   coursename: string;
   username: string;
   feedback: string;

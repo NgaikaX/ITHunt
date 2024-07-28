@@ -51,7 +51,6 @@ public class UserController {
     /**
      * edit user
      * */
-    @AuthAccess
     @PutMapping("/update")
     public Result update(@RequestBody User user){
 
@@ -64,7 +63,6 @@ public class UserController {
      * */
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Integer id){
-
         userService.removeById(id);
         return Result.success();
     }

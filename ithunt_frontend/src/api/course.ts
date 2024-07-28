@@ -1,5 +1,5 @@
 import request from "./../utils/request";
-import { CourseQueryType, CourseType, FeedbackQueryType } from "./../type";
+import {CourseQueryType, CourseType, FeedbackQueryType, UserType} from "./../type";
 import qs from "qs";
 import axios from "axios";
 
@@ -13,9 +13,10 @@ export async function getAllCourseList() {
 export async function courseAdd(params: CourseType) {
   return request.post("/course/add", params);
 }
-export async function getFeedbackList(params?: FeedbackQueryType) {
-  return request.get(`/api/feedback?${qs.stringify(params)}`);
+export async function courseUpdate(params: CourseType) {
+  return request.put(`/course/update`, params);
 }
+
 
 export async function courseDelete(id: string) {
   return request.delete(`/course/delete/${id}`);
@@ -23,8 +24,15 @@ export async function courseDelete(id: string) {
 export async function getCourseDetails(id: number) {
   return request.get(`/course/details/${id}`);
 }
-export async function getFeedback(id: string) {
-  return request.get(`/api/feedback/${id}`);
+
+//feedback list
+export async function getFeedbackList(params?: FeedbackQueryType) {
+  return request.get(`/feedback/feedbackList?${qs.stringify(params)}`);
+}
+
+//get course feedback by course_id
+export async function getFeedback(id: number) {
+  return request.get(`/feedback/courseFeedback/${id}`);
 }
 // 抽取的封面上传函数
 export async function coverUpload(cover: FormData) {

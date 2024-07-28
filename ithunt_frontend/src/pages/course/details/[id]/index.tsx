@@ -20,7 +20,7 @@ export default function CourseDetail() {
       getCourseDetails(id as number).then((res) => {
         setCourse(res.data);
       });
-      getFeedback(id as string).then((fb) => {
+      getFeedback(id as number).then((fb) => {
         setFeedbackList(fb.data);
       });
     }

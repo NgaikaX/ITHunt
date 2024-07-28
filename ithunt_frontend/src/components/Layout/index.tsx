@@ -28,7 +28,7 @@ import { RootState } from "@/store/modules";
 import { USER_ROLE } from "@/constants";
 import { useAppDispatch } from "@/store";
 import { fetchMessages } from "@/store/modules/messages";
-import {fetchLogin, logoutUser} from "@/store/modules/user";
+import {fetchLogin, loginUser, logoutUser} from "@/store/modules/user";
 
 const { Header, Content, Sider } = Antdlayout;
 
@@ -177,7 +177,6 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     }
   }, [userRole]);
 
-  console.log("menu items:", filteredItems);
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     router.push(`http://localhost:3000/${key}`);
@@ -195,7 +194,6 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const [selectedMessage, setSelectedMessage] = useState<string>("");
 
   useEffect(() => {
-
     setInitLoading(false);
     if (modalVisible) {
       dispatch(fetchMessages());

@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.backend.common.AuthAccess;
 import com.backend.common.Result;
 import com.backend.entity.Course;
+import com.backend.entity.Feedback;
 import com.backend.entity.User;
 import com.backend.service.CourseService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -43,7 +44,6 @@ public class CourseController {
     /**
      * query course List
      * */
-    @AuthAccess
     @GetMapping("/courseList")
         public Result getCourseList(@RequestParam(required = false) String coursename,@RequestParam Integer current,@RequestParam Integer pageSize){
         QueryWrapper<Course> queryWrapper = new QueryWrapper<Course>().orderByDesc("id");
@@ -55,9 +55,8 @@ public class CourseController {
         return Result.success(page);
     }
     /**
-     * show all course
+     * get all course
      * */
-    @AuthAccess
     @GetMapping("/allCourse")
     public Result getAllCourseList(){
         List<Course> courseList = courseService.list(new QueryWrapper<Course>().orderByDesc("id"));
@@ -76,7 +75,6 @@ public class CourseController {
     /**
      * delete course
      * */
-    @AuthAccess
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Integer id){
         courseService.removeById(id);
@@ -85,7 +83,6 @@ public class CourseController {
     /**
      * get course details by id
      * */
-    @AuthAccess
     @GetMapping ("/details/{id}")
     public Result details(@PathVariable Integer id) {
         Course course = courseService.getById(id);
@@ -94,7 +91,6 @@ public class CourseController {
     /**
      * add a new course
      * */
-    @AuthAccess
     @PostMapping("/add")
     public Result add(@RequestBody Course course){
         try {courseService.save(course);
@@ -113,7 +109,6 @@ public class CourseController {
     /**
      * upload a new cover
      * */
-    @AuthAccess
     @PostMapping("/upload")
     public Result upload(@RequestParam("cover") MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename();//文件原始名称
@@ -136,7 +131,6 @@ public class CourseController {
     /**
      * download a cover
      * */
-    @AuthAccess
     @GetMapping("/download/{fileName}")
     public void download(@PathVariable String fileName, HttpServletResponse response) throws IOException {
         String filePath = ROOT_PATH + File.separator + fileName;
@@ -148,5 +142,13 @@ public class CourseController {
         outputStream.write(bytes);//字节流数组
         outputStream.flush();//刷新
         outputStream.close();
+    }
+    /**
+     * get course feedback
+     * */
+    @GetMapping("/feedback")
+    public Result getCourseFeedbackList(@PathVariable Integer course_id){
+        //List<Feedback> feedbackList = courseService.getById(course_id);
+        return Result.success();
     }
 }
