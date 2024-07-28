@@ -7,4 +7,6 @@ export interface VocabularyQueryType {
 export interface VocabularyType {
   vocabulary: string;
   explanation: string;
+  uploaddate: string;
+  id?:number;
 }

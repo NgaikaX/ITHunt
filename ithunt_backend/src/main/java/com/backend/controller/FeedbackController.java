@@ -24,10 +24,10 @@ import java.util.List;
 public class FeedbackController {
     @Resource
     FeedbackService feedbackService;
+
     /**
      * get course feedback
      * */
-
     @GetMapping("/courseFeedback/{course_id}")
     public Result getCourseFeedbackList(@PathVariable Integer course_id){
         QueryWrapper<Feedback> queryWrapper = new QueryWrapper<Feedback>().orderByDesc("id");

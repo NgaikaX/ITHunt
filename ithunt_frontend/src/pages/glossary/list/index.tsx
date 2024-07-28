@@ -15,7 +15,6 @@ import styles from "./index.module.css";
 import router from "next/router";
 import { VocabularyQueryType } from "@/type/glossary";
 import { getVocabularyList, vocabularyDeleted } from "@/api/glossary";
-import { log } from "console";
 
 const COLUMNS = [
   {
@@ -48,27 +47,26 @@ const COLUMNS = [
 
 export default function Home() {
   const [form] = Form.useForm();
+  const [data, setData] = useState([]);
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 20,
+    showSizeChanger: true,
+    total: 0,
+  });
   async function fetchData(search?: VocabularyQueryType) {
     const res = await getVocabularyList({
       current: pagination.current,
       pageSize: pagination.pageSize,
       ...search,
     });
-    const { data } = res;
-    setData(data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    setData(res.data.records);
+    setPagination({ ...pagination, current: 1, total: res.data.total });
   }
   const handleSearchFinish = async (values: VocabularyQueryType) => {
-    const res = await getVocabularyList({
-      ...values,
-      current: 1,
-      pageSize: pagination.pageSize,
-    });
-    setData(res.data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    fetchData(values);
   };
   const handleSearchReset = () => {
-    console.log(form);
     form.resetFields();
   };
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -86,8 +84,7 @@ export default function Home() {
   const handleVocabularyEdit = (id: string) => {
     router.push(`/glossary/edit/${id}`);
   };
-  const handleVocabularyDelete = async (id: string) => {
-    console.log(id);
+  const handleVocabularyDelete = async (id: number) => {
     await vocabularyDeleted(id);
     message.success("Delete Sucessfully");
     fetchData(form.getFieldsValue());
@@ -123,14 +120,7 @@ export default function Home() {
     },
   ];
 
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 20,
-    showSizeChanger: true,
-    total: 0,
-  });
 
-  const [data, setData] = useState([]);
   useEffect(() => {
     fetchData();
   }, []);

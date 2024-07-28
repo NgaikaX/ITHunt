@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import type { CollapseProps, TablePaginationConfig } from "antd";
 import { Collapse, Form, Table } from "antd";
-import { getVocabularyList } from "@/api";
+import {getAllVocabularyList} from "@/api";
 import styles from "./index.module.css";
 import { VocabularyType } from "@/type/glossary";
 
 export default function Home() {
   useEffect(() => {
     (async function () {
-      getVocabularyList().then((res) => {
+      getAllVocabularyList().then((res) => {
         console.log(
           "%c[res]-21",
           "font-size:13px; background:pink; color:#000",

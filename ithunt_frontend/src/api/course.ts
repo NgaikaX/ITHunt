@@ -17,7 +17,7 @@ export async function courseUpdate(params: CourseType) {
   return request.put(`/course/update`, params);
 }
 
-export async function courseDelete(id: string) {
+export async function courseDelete(id: number) {
   return request.delete(`/course/delete/${id}`);
 }
 export async function getCourseDetails(id: number) {

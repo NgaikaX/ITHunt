@@ -7,7 +7,7 @@ import { USER_ROLE, USER_STATUS } from "@/constants";
 import {useEffect, useState} from "react";
 import {formatTimestamp} from "@/utils";
 
-export default function QuestionForm({
+export default function UserForm({
   editData = {
     status: USER_STATUS.ON,
     role: USER_ROLE.STU,
@@ -30,7 +30,6 @@ export default function QuestionForm({
     setRole(value);
   };
 
-  //console.log("Initial values passed to the component:", editData);
 
   useEffect(() => {
     if (editData.id) {

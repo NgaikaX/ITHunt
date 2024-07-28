@@ -11,9 +11,8 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
-import {courseDelete, feedbackDelete, getFeedbackList} from "@/api/course";
-import {CourseQueryType, FeedbackQueryType} from "@/type";
-import router from "next/router";
+import { feedbackDelete, getFeedbackList} from "@/api/course";
+import { FeedbackQueryType} from "@/type";
 
 const COLUMNS = [
   {
@@ -103,7 +102,6 @@ export default function Home() {
     });
   };
   const handleFeedbackDelete = async (id: number) => {
-    //console.log(id);
     await feedbackDelete(id);
     message.success("Delete Sucessfully");
     fetchData(form.getFieldsValue());

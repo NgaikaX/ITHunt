@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Button, Form, Image, Input, Space, message } from "antd";
 import { useRouter } from "next/router";
 import ReactQuill from "react-quill";
@@ -6,17 +6,15 @@ import "react-quill/dist/quill.snow.css";
 import styles from "./index.module.css";
 import { vocabularyAdd } from "@/api/glossary";
 import { VocabularyType } from "@/type/glossary";
+import {formatTimestamp} from "@/utils";
+import {CourseType} from "@/type";
 
-export default function GlossaryForm() {
+export default function GlossaryForm({editData={},}:{editData?:Partial<VocabularyType>}) {
   const [form] = Form.useForm();
   const router = useRouter();
-
   const handleFinish = async (values: VocabularyType) => {
-    /*console.log(
-      "%c[values]-21",
-      "font-size:13px; background:pink; color:#000",
-      values
-    );*/
+    //console.log("%c[values]-21",values);
+    values.uploaddate = formatTimestamp(Date.now());
     await vocabularyAdd(values);
     message.success("Create Sucessfully");
     router.push("/glossary/list");
@@ -24,6 +22,13 @@ export default function GlossaryForm() {
   const handleCancel = () => {
     router.push("/glossary/list");
   };
+  useEffect(() => {
+    if (editData.id) {
+      form.setFieldsValue(editData);
+      console.log("editData",editData);
+    }
+  }, [editData, form]);
+
   return (
     <>
       <Form

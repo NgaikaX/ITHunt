@@ -19,7 +19,7 @@ export async function userAdd(params: UserType) {
 }
 
 export async function getUserDetails(id: number) {
-  return request.get(`http://localhost:9090/user/details/${id}`);
+  return request.get(`/user/details/${id}`);
   //return request.get(`/api/user/${id}`);
 }
 
