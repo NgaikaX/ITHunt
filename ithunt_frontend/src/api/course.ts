@@ -17,12 +17,19 @@ export async function courseUpdate(params: CourseType) {
   return request.put(`/course/update`, params);
 }
 
-
 export async function courseDelete(id: string) {
   return request.delete(`/course/delete/${id}`);
 }
 export async function getCourseDetails(id: number) {
   return request.get(`/course/details/${id}`);
+}
+// 抽取的封面上传函数
+export async function coverUpload(cover: FormData) {
+  return axios.post("http://localhost:9090/course/upload", cover, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }).then(response => response.data);
 }
 
 //feedback list
@@ -34,13 +41,12 @@ export async function getFeedbackList(params?: FeedbackQueryType) {
 export async function getFeedback(id: number) {
   return request.get(`/feedback/courseFeedback/${id}`);
 }
-// 抽取的封面上传函数
-export async function coverUpload(cover: FormData) {
-  return axios.post("http://localhost:9090/course/upload", cover, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  }).then(response => response.data);
+
+export async function feedbackDelete(id: number) {
+  return request.delete(`/feedback/delete/${id}`);
 }
+
+
+
 
 

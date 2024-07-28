@@ -2,7 +2,7 @@ import {
   Button,
   Col,
   Form,
-  Input,
+  Input, message,
   Row,
   Space,
   Table,
@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
-import { getFeedbackList } from "@/api/course";
+import {courseDelete, feedbackDelete, getFeedbackList} from "@/api/course";
 import {CourseQueryType, FeedbackQueryType} from "@/type";
 import router from "next/router";
 
@@ -67,7 +67,9 @@ export default function Home() {
       render: (_: any, row: any) => {
         return (
             <Space>
-              <Button type="link" danger>
+              <Button type="link" danger onClick={() => {
+                handleFeedbackDelete(row.id);
+              }}>
                 Delete
               </Button>
             </Space>
@@ -89,7 +91,6 @@ export default function Home() {
     fetchData(values);
   };
   const handleSearchReset = () => {
-    console.log(form);
     form.resetFields();
   };
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -101,7 +102,12 @@ export default function Home() {
       ...query,
     });
   };
-
+  const handleFeedbackDelete = async (id: number) => {
+    //console.log(id);
+    await feedbackDelete(id);
+    message.success("Delete Sucessfully");
+    fetchData(form.getFieldsValue());
+  };
 
 
   useEffect(() => {

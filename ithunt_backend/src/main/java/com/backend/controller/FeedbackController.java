@@ -27,7 +27,7 @@ public class FeedbackController {
     /**
      * get course feedback
      * */
-    @AuthAccess
+
     @GetMapping("/courseFeedback/{course_id}")
     public Result getCourseFeedbackList(@PathVariable Integer course_id){
         QueryWrapper<Feedback> queryWrapper = new QueryWrapper<Feedback>().orderByDesc("id");
@@ -46,5 +46,14 @@ public class FeedbackController {
         }
         Page<Feedback> page = feedbackService.page(new Page<>(current, pageSize), queryWrapper);
         return Result.success(page);
+    }
+
+    /**
+     * delete feedback
+     * */
+    @DeleteMapping ("/delete/{id}")
+    public Result delete(@PathVariable Integer id){
+        feedbackService.removeById(id);
+        return Result.success();
     }
 }
