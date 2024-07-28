@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Button,
   Form,
@@ -11,8 +11,8 @@ import {
   message,
 } from "antd";
 import styles from "./index.module.css";
-import {courseAdd, coverUpload} from "@/api/course";
-import { CourseType } from "@/type";
+import {courseAdd, courseUpdate, coverUpload} from "@/api/course";
+import {CourseType, UserType} from "@/type";
 import { useRouter } from "next/router";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {formatTimestamp} from "@/utils";
@@ -37,16 +37,23 @@ const beforeUpload = (file) => {
   return isJpgOrPng && isLt2M;
 };
 
-export default function CourseForm() {
+export default function CourseForm( {editData={},}:{editData?:Partial<CourseType>}) {
   const [form] = Form.useForm();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
   const [fileList, setFileList] = useState<File[]>([]);
 
-
+  useEffect(() => {
+    if (editData.id) {
+      form.setFieldsValue(editData);
+      console.log("editData",editData);
+    }
+    //console.log("Edit data set in form:", editData);
+  }, [editData, form]);
 
   const handleFinish = async (values: CourseType) => {
+    values.uploaddate = formatTimestamp(Date.now());  // Set current date and time
     setLoading(true);
       let coverUrl: string;
       let uploadDate: string;
@@ -57,11 +64,16 @@ export default function CourseForm() {
         const uploadData = await coverUpload(formData as FormData);
         //console.log("uploadData", uploadData); // 打印上传响应数据
         coverUrl = uploadData.data; // 根据返回的数据结构获取URL
-        uploadDate = formatTimestamp(Date.now());
       }
       values.cover = coverUrl;
-      values.uploaddate= uploadDate;
+
+    if (editData?.id){
+      await courseUpdate({ ...editData, ...values });
+    }else{
       await courseAdd(values);
+    }
+
+
       message.success("Course created successfully");
       router.push("/course/list");
       setLoading(false);
