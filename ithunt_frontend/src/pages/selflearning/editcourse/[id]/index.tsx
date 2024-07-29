@@ -12,11 +12,7 @@ export default function Home() {
     if (id) {
       getSlCourseDetails(id as string).then((res) => {
         setData(res.data);
-        /*console.log(
-          "%c[res]-21",
-          "font-size:13px; background:pink; color:#000",
-          res
-        );*/
+        //console.log(%c[res]-21",res);
       });
     }
   }, [id]);

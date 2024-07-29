@@ -4,18 +4,22 @@ import { useRouter } from "next/router";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styles from "./index.module.css";
-import { vocabularyAdd } from "@/api/glossary";
+import {glossaryUpdate, vocabularyAdd} from "@/api/glossary";
 import { VocabularyType } from "@/type/glossary";
 import {formatTimestamp} from "@/utils";
 import {CourseType} from "@/type";
+import {slCourseAdd, slCourseUpdate} from "@/api";
 
 export default function GlossaryForm({editData={},}:{editData?:Partial<VocabularyType>}) {
   const [form] = Form.useForm();
   const router = useRouter();
   const handleFinish = async (values: VocabularyType) => {
-    //console.log("%c[values]-21",values);
     values.uploaddate = formatTimestamp(Date.now());
-    await vocabularyAdd(values);
+    if (editData.id) {
+      await glossaryUpdate({ ...editData, ...values });
+    } else {
+      await vocabularyAdd(values);
+    }
     message.success("Create Sucessfully");
     router.push("/glossary/list");
   };

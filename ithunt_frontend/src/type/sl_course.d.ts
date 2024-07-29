@@ -8,5 +8,6 @@ export interface Sl_CourseType {
   cover: string;
   videourl: string;
   description: string;
+  uploaddate:string;
   id?: string;
 }

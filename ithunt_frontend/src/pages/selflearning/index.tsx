@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "antd";
-import { getSl_CourseList } from "@/api";
+import {getAllSl_CourseList, getSl_CourseList} from "@/api";
 import { Sl_CourseType } from "@/type";
 import styles from "./index.module.css";
 import router from "next/router";
@@ -11,12 +11,8 @@ export default function Home() {
 
   useEffect(() => {
     (async function () {
-      getSl_CourseList().then((res) => {
-        console.log(
-          "%c[res]-21",
-          "font-size:13px; background:pink; color:#000",
-          res
-        );
+      getAllSl_CourseList().then((res) => {
+        console.log("%c[res]-21", res);
         setCourseList(res.data);
       });
     })();

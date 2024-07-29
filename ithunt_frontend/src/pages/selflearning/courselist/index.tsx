@@ -13,7 +13,6 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.css";
-import { courseDelete, getCourseList } from "@/api/course";
 import { CourseQueryType } from "@/type";
 import router from "next/router";
 import { getSl_CourseList, slCourseDelete } from "@/api";
@@ -45,7 +44,7 @@ const COLUMNS = [
     dataIndex: "description",
     key: "description",
     ellipsis: true,
-    width: 300,
+    width: 250,
     render: (text: string) => {
       return (
         <Tooltip title={text} placement="topLeft">
@@ -64,27 +63,27 @@ const COLUMNS = [
 
 export default function Home() {
   const [form] = Form.useForm();
+  const [data, setData] = useState([]);
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 20,
+    showSizeChanger: true,
+    total: 0,
+  });
   async function fetchData(search?: CourseQueryType) {
     const res = await getSl_CourseList({
       current: pagination.current,
       pageSize: pagination.pageSize,
       ...search,
     });
-    const { data } = res;
-    setData(data);
-    setPagination({ ...pagination, total: res.total });
+    setData(res.data.records);
+    setPagination({ ...pagination, total: res.data.total });
+    console.log("data", res.data.records);
   }
   const handleSearchFinish = async (values: CourseQueryType) => {
-    const res = await getSl_CourseList({
-      ...values,
-      current: 1,
-      pageSize: pagination.pageSize,
-    });
-    setData(res.data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    fetchData(values);
   };
   const handleSearchReset = () => {
-    //console.log(form);
     form.resetFields();
   };
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -140,14 +139,6 @@ export default function Home() {
     },
   ];
 
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 20,
-    showSizeChanger: true,
-    total: 0,
-  });
-
-  const [data, setData] = useState([]);
   useEffect(() => {
     fetchData();
   }, []);
@@ -164,7 +155,7 @@ export default function Home() {
       >
         <Row gutter={24}>
           <Col span={8}>
-            <Form.Item name="coursename" label="Course">
+            <Form.Item name="coursename" label="Course Name">
               <Input placeholder="Enter a course name" allowClear />
             </Form.Item>
           </Col>

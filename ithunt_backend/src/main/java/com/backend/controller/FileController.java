@@ -35,7 +35,7 @@ public class FileController {
     public Result upload(MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename();//文件原始名称
         String mainName = FileUtil.mainName(originalFilename);//文件名称 e.g.aaa
-        String extName = FileUtil.extName("文件的后缀");//文件后缀 e.g. png
+        String extName = FileUtil.extName(originalFilename);//文件后缀 e.g. png
         if(!FileUtil.exist(ROOT_PATH)){//父级文件是否存在
             FileUtil.mkdir(ROOT_PATH);//当前文件的父级目录不存在，就创建
         }

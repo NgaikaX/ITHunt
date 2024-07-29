@@ -47,6 +47,9 @@ export default function CourseForm( {editData={},}:{editData?:Partial<CourseType
   useEffect(() => {
     if (editData.id) {
       form.setFieldsValue(editData);
+      if (editData.cover) {
+        setImageUrl(editData.cover); // Assuming editData.cover is base64 or URL of the image
+      }
       console.log("editData",editData);
     }
     //console.log("Edit data set in form:", editData);
@@ -62,7 +65,7 @@ export default function CourseForm( {editData={},}:{editData?:Partial<CourseType
         const formData = new FormData();
         formData.append("cover", fileList[0]);
         const uploadData = await coverUpload(formData as FormData);
-        //console.log("uploadData", uploadData); // 打印上传响应数据
+        console.log("uploadData", uploadData); // 打印上传响应数据
         coverUrl = uploadData.data; // 根据返回的数据结构获取URL
       }
       values.cover = coverUrl;
@@ -72,8 +75,6 @@ export default function CourseForm( {editData={},}:{editData?:Partial<CourseType
     }else{
       await courseAdd(values);
     }
-
-
       message.success("Course created successfully");
       router.push("/course/list");
       setLoading(false);

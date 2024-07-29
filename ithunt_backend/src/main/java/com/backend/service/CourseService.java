@@ -15,6 +15,4 @@ import javax.annotation.Resource;
 
 @Service
 public class CourseService extends ServiceImpl<CourseMapper, Course> {
-    @Resource
-    CourseMapper courseMapper;
 }

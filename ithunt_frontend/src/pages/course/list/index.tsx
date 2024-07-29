@@ -102,7 +102,7 @@ export default function Home() {
       current: pagination.current,
       pageSize: pagination.pageSize
     });
-    console.log("%c[res]-2", res);
+    console.log("data", res.data.records);
     setData(res.data.records);
     setPagination({ ...pagination, total: res.data.total });
   }
@@ -128,7 +128,6 @@ export default function Home() {
     router.push(`/course/edit/${id}`);
   };
   const handleCourseDelete = async (id: number) => {
-    //console.log(id);
     await courseDelete(id);
     message.success("Delete Sucessfully");
     fetchData(form.getFieldsValue());

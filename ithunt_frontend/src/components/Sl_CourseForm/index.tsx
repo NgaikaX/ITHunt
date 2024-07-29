@@ -9,26 +9,27 @@ import {
   UploadProps,
   message,
 } from "antd";
-import { Sl_CourseType } from "@/type";
+import {Sl_CourseType, VocabularyType} from "@/type";
 import { useRouter } from "next/router";
 import {
   LoadingOutlined,
   PlusOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { slCourseAdd, slCourseUpdate } from "@/api";
+import {coverUpload, slCourseAdd, slCourseCoverUpload, slCourseUpdate, slCourseVideoUpload} from "@/api";
 import styles from "./index.module.css";
+import {formatTimestamp} from "@/utils";
 
 const { TextArea } = Input;
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
-const getBase64 = (img: FileType, callback: (url: string) => void) => {
+const getBase64 = (img, callback: (url: string) => void) => {
   const reader = new FileReader();
   reader.addEventListener("load", () => callback(reader.result as string));
   reader.readAsDataURL(img);
 };
-const beforeUploadImg = (file: FileType) => {
+const beforeUploadImg = (file) => {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
   if (!isJpgOrPng) {
     message.error("You can only upload JPG/PNG file!");
@@ -40,7 +41,7 @@ const beforeUploadImg = (file: FileType) => {
   return isJpgOrPng && isLt2M;
 };
 
-const beforeUploadVideo = (file: FileType) => {
+const beforeUploadVideo = (file) => {
   const isMp4 = file.type === "video/mp4";
   if (!isMp4) {
     message.error("You can only upload JPG/PNG file!");
@@ -48,19 +49,14 @@ const beforeUploadVideo = (file: FileType) => {
   return isMp4;
 };
 
-export default function CourseForm({
-  editData = {
-    coursename: "",
-  },
-}: {
-  editData?: Partial<Sl_CourseType>;
-}) {
+export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseType>}) {
   const [form] = Form.useForm();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
   const [videoUrl, setVideoUrl] = useState<string>();
-
+  const [fileList, setFileList] = useState<File[]>([]);
+  const [videoList, setVideoList] = useState<File[]>([]);
   useEffect(() => {
     if (editData.id) {
       form.setFieldsValue(editData);
@@ -75,40 +71,58 @@ export default function CourseForm({
   }, [editData, form]);
 
   const handleFinish = async (values: Sl_CourseType) => {
-    console.log(
-      "%c[values]-21",
-      "font-size:13px; background:pink; color:#000",
-      values
-    );
+    values.uploaddate = formatTimestamp(Date.now());  // Set current date and time
+    setLoading(true);
+    let coverUrl: string;
+    let videoUrl: string;
+    const formData = new FormData();
+    if (fileList.length > 0) {
+      formData.append("cover", fileList[0]);
+      const uploadData = await slCourseCoverUpload(formData as FormData);
+      //console.log("uploadData", uploadData); // 打印上传响应数据
+      coverUrl = uploadData.data; // 根据返回的数据结构获取URL
+    }
+    if (videoList.length > 0){
+      formData.append("video", videoList[0]);
+      const uploadVideo = await slCourseVideoUpload(formData as FormData);
+      videoUrl = uploadVideo.data;
+    }
+    values.cover = coverUrl;
+    values.videourl=videoUrl;
+
     if (editData.id) {
-      await slCourseUpdate(values);
+      await slCourseUpdate({ ...editData, ...values });
     } else {
       await slCourseAdd(values);
     }
     message.success("Create Sucessfully");
     router.push("/selflearning/courselist");
+    setLoading(false);
   };
   const handleCancel = () => {
     router.push("/selflearning/courselist");
   };
 
-  const handleImgChange: UploadProps["onChange"] = (info) => {
+  const handleImgChange = (info: any) => {
     console.log(info);
-
     if (info.file.status === "uploading") {
       setLoading(true);
       return;
     }
     if (info.file.status === "done") {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoading(false);
-        setImageUrl(url);
-      });
+      setFileList([info.file.originFileObj]);
+      const reader = new FileReader();
+      reader.onload = () => setImageUrl(reader.result as string);
+      reader.readAsDataURL(info.file.originFileObj);
+      setLoading(false);
+    }
+    if (info.file.status === "error") {
+      setLoading(false);
+      message.error("Upload failed.");
     }
   };
 
-  const handleVideoChange: UploadProps["onChange"] = (info) => {
+  const handleVideoChange = (info: any) => {
     console.log(info);
 
     if (info.file.status === "uploading") {
@@ -117,10 +131,11 @@ export default function CourseForm({
     }
     if (info.file.status === "done") {
       // Get this url from response in real world.
-      const videoFile = info.file.originFileObj as FileType;
-      const videoURL = URL.createObjectURL(videoFile);
+      setVideoList([info.file.originFileObj]);
+      const reader = new FileReader();
+      reader.onload = () => setVideoUrl(reader.result as string);
+      reader.readAsDataURL(info.file.originFileObj);
       setLoading(false);
-      setVideoUrl(videoURL);
     }
   };
 
