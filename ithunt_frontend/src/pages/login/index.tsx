@@ -7,30 +7,32 @@ import { useDispatch, useSelector } from "react-redux";
 import {fetchLogin} from "@/store/modules/user";
 import { RootState } from "@/store";
 import { USER_ROLE } from "@/constants";
+import {useEffect, useState} from "react";
 
 export default function Home() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const userRole = useSelector((state: RootState) => state.user.role);
+  const [userRole, setUserRole] = useState<string>('');
 
   const handleFinish = (values: UserLoginType) => {
     try {
       dispatch(fetchLogin(values));
       message.success("Log in successfully");
-      userRole === USER_ROLE.STU
-          ? router.push("dashboard")
-          : router.push("users");
-      /*console.log(
-        "%c [ res ]-17",
-        "font-size:13px; background:pink; color:#bf2c9f;",
-        res.data
-      );*/
-
+      if (typeof window !== 'undefined') {
+        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+        setUserRole(userData.role || '');
+      }
     } catch (error) {
       message.error("Login failed");
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (userRole) {
+      userRole === USER_ROLE.STU ? router.push("dashboard") : router.push("users");
+    }
+  }, [userRole]);
 
   return (
     <div className={styles.classContainer}>

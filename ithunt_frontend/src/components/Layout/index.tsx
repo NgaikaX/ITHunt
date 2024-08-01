@@ -126,8 +126,10 @@ const ITEMS = [
 ];
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const userRole = useSelector((state: RootState) => state.user.role);
-  const userName = useSelector((state: RootState) => state.user.username);
+  const [userName, setUserName] = useState<string>('');
+  const [userRole, setUserRole] = useState<string>('');
+
+
   const router = useRouter();
 
   const activeMenu = router.pathname;
@@ -194,6 +196,11 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const [selectedMessage, setSelectedMessage] = useState<string>("");
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      setUserName(userData.username || '');
+      setUserRole(userData.role || '');
+    }
     setInitLoading(false);
     if (modalVisible) {
       dispatch(fetchMessages());
