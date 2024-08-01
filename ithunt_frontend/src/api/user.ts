@@ -1,5 +1,6 @@
 import request from "../utils/request";
 import {
+  MessageType,
   SubmitQuizType,
   UserInfoQueryType,
   UserInfoType,
@@ -36,13 +37,14 @@ export async function userLogout() {
 }
 
 export async function userInfoAdd(params: UserInfoType) {
-  return request.post("/api/userinfo", params);
+  return request.post("/userinfo/add", params);
 }
-
-export async function getUserInfoList(params?: UserInfoQueryType) {
-  return request.get(`/api/userinfo?${qs.stringify(params)}`);
+export async function getUserInfoList(user_id: number) {
+  return request.get("/userinfo/getStudyPartners",{params: { user_id } });
 }
-
+export async function getUserInfo(user_id: number) {
+  return request.get("/userinfo/getUserInfo",{params: { user_id } });
+}
 export async function getUserCourseList(user_id: number) {
   return request.get("/userCourse/UserCourseList",{params: { user_id } });
 }
@@ -53,13 +55,15 @@ export async function QuizHasSubmited(user_id: number) {
   return request.get("/userQuestion/UserQuestionList",{params: { user_id } });
 }
 
-export async function submitQuiz(params:  SubmitQuizType[]) {
+export async function submitQuiz(params: SubmitQuizType[]) {
   return request.post("/userQuestion/submitQuiz", params);
 }
-
 export async function getCourseCompletion(user_id: number) {
   return request.get("/userCourse/courseCompletion",{params: { user_id } });
 }
 export async function getQuizCompletion(user_id: number) {
   return request.get("/userQuiz/quizCompletion",{params: { user_id } });
 }
+
+
+

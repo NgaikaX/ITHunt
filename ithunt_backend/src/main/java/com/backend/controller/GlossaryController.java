@@ -48,7 +48,6 @@ public class GlossaryController {
     public Result add(@RequestBody Glossary glossary){
         try {
             glossaryService.save(glossary);
-
         }catch (Exception e){
             if(e instanceof DuplicateKeyException){
                 return Result.error("500","insert data error");

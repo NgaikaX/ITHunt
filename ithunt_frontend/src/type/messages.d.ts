@@ -1,16 +1,15 @@
-export interface MessagesType {
-  sender_id: string;
-  reciever_id?: string;
-  sender_name: string;
-  id: string;
-  senttime: string;
-  language: string;
-  interests: string[];
-  read: string;
+import {INTEREST, LANGUAGE} from "@/constants";
+
+export interface MessageType {
+  senderId: number;
+  recieverId: number;
+  senderName: string;
   contact: string;
+  interest: INTEREST;
+  language: LANGUAGE;
 }
 
 export interface MessagesQueryType {
-  reciever_id?: string;
-  read?: string;
+  recieverId?: number;
+  senderId?:number;
 }

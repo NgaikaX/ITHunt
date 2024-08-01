@@ -1,6 +1,3 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import styles from "./index.module.css";
 import { SetStateAction, useEffect, useState } from "react";
 import {
@@ -23,15 +20,14 @@ import {
   message,
 } from "antd";
 import { INTEREST, LANGUAGE } from "@/constants";
-import { UserCourseType, UserInfoType, UserQuizType } from "@/type";
+import {MessageType, UserCourseType, UserInfoType, UserQuizType} from "@/type";
 import {
   getCourseCompletion, getQuizCompletion,
-  getUserCourseList,
+  getUserCourseList, getUserInfo,
   getUserInfoList,
-  getUserQuizList,
+  getUserQuizList, sendMessage,
   userInfoAdd,
 } from "@/api";
-import { SelectCommonPlacement } from "antd/es/_util/motion";
 import { useRouter } from "next/router";
 
 export default function Dashboard() {
@@ -39,6 +35,8 @@ export default function Dashboard() {
   const router = useRouter();
   const [coursePercent, setCoursePercent] = useState<number>(null);
   const [quizPercent, setQuizPercent] = useState<number>(null);
+  const[userInfo, setUserInfo] = useState<UserInfoType>(null);
+  const [form] = Form.useForm();
 
   //course progress
   const getCourseMessage = (percent: number) => {
@@ -87,7 +85,6 @@ export default function Dashboard() {
     { value: INTEREST.SP, label: "Sport" },
     { value: INTEREST.NON, label: "None of them" },
   ];
-  const [interest, setInterest] = useState<string>("");
   const [formLocked, setFormLocked] = useState(false);
 
   //course Table card and study partners card
@@ -97,19 +94,21 @@ export default function Dashboard() {
   const [quiz, setQuiz] = useState<UserQuizType[]>([]);
   const [view, setView] = useState("course");
   const[user_id, setUserID] = useState(null);
+  const[userName, setUserName] = useState<string>('');
+
 
   //Modal
   const [showModal, setShowModal] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const[messageConfirmation, setConfirmation] = useState<string>('');
+  const[receiver_id, setReceiverID] = useState(null);
 
   const handleFinish = async (values: UserInfoType) => {
-    //const interests = [interests1, interests2];
-    const updatedValues = { ...values};
-    await userInfoAdd(updatedValues);
+    values.userId = user_id;
+    values.username = userName;
+    await userInfoAdd({...values});//add or update user info
     message.success("Information Added Successfully");
-    await getUserInfoList(updatedValues);
-    message.success("search for study partners");
-    console.log("information", updatedValues);
+    await fetchData(user_id);
     setFormLocked(true); //lock the form
   };
   const handleEdit = () => {
@@ -119,30 +118,39 @@ export default function Dashboard() {
   async function fetchData(value?: any) {
     //get user's course list
     try {
-      if (user_id) {
-        //get coursePercent
-        const cPercent = await getCourseCompletion(user_id);
-        setCoursePercent(cPercent.data);
-        //get user course list
-        const courseres = await getUserCourseList(user_id);
-        const course = courseres.data;
-        setCourse(course || []);
+      //get coursePercent
+      const cPercent = await getCourseCompletion(user_id);
+      setCoursePercent(cPercent.data);
+      //get user course list
+      const courseres = await getUserCourseList(user_id);
+      const course = courseres.data;
+      setCourse(course || []);
 
-        //get quizPercent
-        const qPercent = await getQuizCompletion(user_id);
-        setQuizPercent(qPercent.data);
-        //get user's quiz list
-        const quizres = await getUserQuizList(user_id);
-        const quiz = quizres.data;
-        setQuiz(quiz || []);
+      //get quizPercent
+      const qPercent = await getQuizCompletion(user_id);
+      setQuizPercent(qPercent.data);
+      //get user's quiz list
+      const quizres = await getUserQuizList(user_id);
+      const quiz = quizres.data;
+      setQuiz(quiz || []);
+
+      //get User info
+      const infoRes = await getUserInfo(user_id);
+      const userInfoData = infoRes.data;
+      setUserInfo(userInfoData);
+
+      if (userInfoData && Object.keys(userInfoData).length > 0) {
+        form.setFieldsValue(userInfoData); // when has userInfo fill the form
+        setFormLocked(true); // lock the form
+      } else {
+        form.resetFields(); // when userInfo is null clear the form
+        setFormLocked(false); // unlock the form
       }
-      const res = await getUserInfoList({
-        ...value,
-      });
 
       //get study partner list
+      const res = await getUserInfoList(user_id);
       const { data } = res; // Correctly access data here
-      console.log("fetchData", data);
+      console.log("data",data);
       setList(data || []); // Ensure list is an array
       setInitLoading(false); // set loading to false after data is fetched
     } catch (error) {
@@ -156,6 +164,7 @@ export default function Dashboard() {
     if (typeof window !== 'undefined') {
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       setUserID(userData.id || null);
+      setUserName(userData.username ||"");
     }
   }, []);
 
@@ -168,6 +177,26 @@ export default function Dashboard() {
   const handleViewChange = (e: any) => {
     setView(e.target.value); // update views
     console.log("views", e.target.value);
+  };
+  const handleSendMessage = async () =>{
+    setConfirmLoading(true);
+    try {
+      const messageData:MessageType = {
+        senderId: user_id,
+        senderName:userName,
+        recieverId:receiver_id,
+        contact:userInfo.contact,
+        interest:userInfo.interest,
+        language:userInfo.language
+      };
+      await sendMessage(messageData);
+      message.success('You have sent message successfully!');
+      setShowModal(false);
+    } catch (error) {
+      message.error('Failed to send message.');
+    } finally {
+      setConfirmLoading(false);
+    }
   };
 
   const renderCourseList = () => (
@@ -186,7 +215,7 @@ export default function Dashboard() {
         const description = `${completeString}`;
         let btn = "";
         {
-          item.complete === 1 ? (btn = "Review") : (btn = "Learn");
+          item.complete === true ? (btn = "Review") : (btn = "Learn");
         }
         return (
           <List.Item
@@ -309,7 +338,10 @@ export default function Dashboard() {
         <Col span={8}>
           <Card className={styles.info}>
             <h3>Personal Information</h3>
-            <Form layout="vertical" onFinish={handleFinish}>
+            <Form layout="vertical"
+                  onFinish={handleFinish}
+                  form={form}
+                  initialValues={userInfo}>
               <Form.Item
                 label="Contact method"
                 name="contact"
@@ -342,7 +374,6 @@ export default function Dashboard() {
               >
                 <Select
                   placeholder="Select an Interest"
-                  //onChange={(values) => setInterest(values as string)}
                   disabled={formLocked}
                 >
                   {interestOptions.map((option) => (
@@ -375,14 +406,13 @@ export default function Dashboard() {
           {/*Study Partner */}
           <Card title="Study Partners" className={styles.studyPartner}>
             <List
-              className="demo-loadmore-list"
               loading={initLoading}
               itemLayout="horizontal"
               dataSource={list}
               renderItem={(item) => {
-                const interestsString = item.interests.join(", ");
-                const description = `Interest: ${interestsString}  Language: ${item.language}`;
-
+                const description = `Interest: ${item.interest} Language: ${item.language}`;
+                const confirmation = `Do you want to say hi and send you contact information to ${item.username}`
+                const itemId = item.userId;
                 return (
                   <List.Item
                     actions={[
@@ -391,13 +421,15 @@ export default function Dashboard() {
                         type="primary"
                         onClick={() => {
                           setShowModal(true);
+                          setConfirmation(confirmation);
+                          setReceiverID(itemId)
                         }}
                       >
                         Say Hi
                       </Button>,
                     ]}
                   >
-                    <Skeleton avatar title={false} loading={initLoading} active>
+                    <Skeleton avatar title={false} loading={initLoading} active >
                       <List.Item.Meta
                         title={item.username}
                         description={description}
@@ -410,23 +442,15 @@ export default function Dashboard() {
           </Card>
         </Col>
       </Row>
-      {/*Midal part */}
+      {/*Modal part */}
       <Modal
-        title="Say Hello Confirmation"
-        visible={showModal}
-        confirmLoading={confirmLoading}
-        onOk={() => {
-          setConfirmLoading(true);
-          setTimeout(() => {
-            message.success(`You have sent message to successfully!`);
-            setShowModal(false);
-            setConfirmLoading(false);
-            //TODO：一个put Message的接口
-          }, 2000); //模拟异步
-        }}
-        onCancel={() => setShowModal(false)}
+          title="Say Hello Confirmation"
+          open={showModal}
+          confirmLoading={confirmLoading}
+          onOk={handleSendMessage}
+          onCancel={() => setShowModal(false)}
       >
-        <p>Do you want to say hello to someone?</p>
+        <p>{messageConfirmation}</p>
       </Modal>
     </>
   );

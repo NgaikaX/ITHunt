@@ -31,14 +31,8 @@ export interface UserInfoType {
   userId: number;
   username: string;
   language: LANGUAGE;
-  interests: string[];
+  interest: INTEREST;
   contact: string;
-}
-
-export interface UserInfoQueryType {
-  language?: LANGUAGE;
-  interests?: string[];
-  all?: boolean;
 }
 
 export interface UserCourseType {
@@ -64,3 +58,4 @@ export interface SubmitQuizType {
   submitTime: string;
   coursename: string;
 }
+

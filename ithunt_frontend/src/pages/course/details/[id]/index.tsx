@@ -104,7 +104,7 @@ export default function CourseDetail() {
       </Card>
       <Modal
         title="Feedback"
-        visible={showModal}
+        open={showModal}
         confirmLoading={confirmLoading}
         onCancel={() => setShowModal(false)}
         footer={[

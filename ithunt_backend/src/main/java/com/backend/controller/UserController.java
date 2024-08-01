@@ -52,7 +52,6 @@ public class UserController {
      * */
     @PutMapping("/update")
     public Result update(@RequestBody User user){
-
         userService.updateById(user);
         return Result.success();
     }
@@ -91,6 +90,7 @@ public class UserController {
         Page<User> page = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
         return Result.success(page);
     }
+
     /**
      * get user details by id
      * */

@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import type { MenuProps } from "antd";
 import {
-  Layout as Antdlayout,
+  Layout as AntdLayout,
   Menu,
   Dropdown,
   Space,
@@ -22,15 +22,11 @@ import {
   ReadOutlined,
 } from "@ant-design/icons";
 import Head from "next/head";
-import { userLogout } from "@/api";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/modules";
+import { getUserInfo, messagesUpdate, sendMessage, userLogout, getMessagesList } from "@/api";
 import { USER_ROLE } from "@/constants";
-import { useAppDispatch } from "@/store";
-import { fetchMessages } from "@/store/modules/messages";
-import {fetchLogin, loginUser, logoutUser} from "@/store/modules/user";
+import { MessageType, UserInfoType } from "@/type";
 
-const { Header, Content, Sider } = Antdlayout;
+const { Header, Content, Sider } = AntdLayout;
 
 const ITEMS = [
   {
@@ -44,7 +40,6 @@ const ITEMS = [
     label: "Glossary",
     icon: <ReadOutlined />,
     role: USER_ROLE.STU,
-
     children: [
       {
         key: "/glossary",
@@ -59,7 +54,6 @@ const ITEMS = [
     label: "Learning in MSC IT+",
     icon: <DesktopOutlined />,
     role: USER_ROLE.STU,
-
     children: [
       {
         key: "/course",
@@ -79,7 +73,6 @@ const ITEMS = [
     label: "Self-learning Hub",
     icon: <DesktopOutlined />,
     role: USER_ROLE.STU,
-
     children: [
       {
         key: "/selflearning",
@@ -116,7 +109,6 @@ const ITEMS = [
       },
     ],
   },
-
   {
     key: "users",
     label: "Users",
@@ -125,51 +117,55 @@ const ITEMS = [
   },
 ];
 
-const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const [userName, setUserName] = useState<string>('');
-  const [userRole, setUserRole] = useState<string>('');
-
+const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+  const [userName, setUserName] = useState<string>("");
+  const [userRole, setUserRole] = useState<string>("");
+  const [user_id, setUserId] = useState<number | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [messages, setMessages] = useState<MessageType[]>([]);
+  const [initLoading, setInitLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<string>("");
+  const [userInfo, setUserInfo] = useState<UserInfoType | null>(null);
+  const [receiverId, setReceiverID] = useState<number | null>(null);
+  const [readStatus, setReadStatus] = useState(false);
 
   const router = useRouter();
-
   const activeMenu = router.pathname;
   const defaultOpenKeys = [activeMenu.split("/")[1]];
-  const [modalVisible, setModalVisible] = useState(false);
 
   const USER_ITEMS = useMemo(
-    () => [
-      {
-        label: <span onClick={() => setModalVisible(true)}>Notification</span>,
-        key: "/dashboard/notification",
-      },
-      {
-        label: (
-          <span
-            onClick={async () => {
-              //await userLogout();
-              message.success("Log out successfully");
-              dispatch(logoutUser());
-              router.push("/login");
-            }}
-          >
+      () => [
+        {
+          label: <span onClick={() => setModalVisible(true)}>Notification</span>,
+          key: "/dashboard/notification",
+        },
+        {
+          label: (
+              <span
+                  onClick={async () => {
+                    await userLogout();
+                    message.success("Log out successfully");
+                    router.push("/login");
+                  }}
+              >
             Log out
           </span>
-        ),
-        key: "login",
-      },
-    ],
-    [setModalVisible, router]
+          ),
+          key: "login",
+        },
+      ],
+      [router]
   );
+
   const filteredItems = useMemo(() => {
     if (userRole === USER_ROLE.STU) {
-      // 先根据用户角色过滤顶级菜单项
       const topLevelItems = ITEMS.filter((item) => item.role === userRole);
-
-      // 遍历顶级菜单项，进一步过滤子菜单项
       topLevelItems.forEach((item) => {
         if (item.children) {
           item.children = item.children.filter(
-            (child) => child.role === userRole
+              (child) => child.role === userRole
           );
         }
       });
@@ -179,47 +175,79 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     }
   }, [userRole]);
 
-
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     router.push(`http://localhost:3000/${key}`);
   };
 
+  const fetchData = async () => {
+    if (typeof window !== "undefined") {
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      setUserName(userData.username || "");
+      setUserRole(userData.role || "");
+      setUserId(userData.id);
+    }
 
-  //notifications
-  const dispatch = useAppDispatch();
-  const messages = useSelector((state: RootState) => state.messages.messages);
-  console.log("messages:", messages);
-  const [initLoading, setInitLoading] = useState(true);
-  //messages details
-  const [showModal, setShowModal] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState<string>("");
+    try {
+      const infoRes = await getUserInfo(user_id!);
+      setUserInfo(infoRes.data);
+      setInitLoading(false);
+
+      if (modalVisible) {
+        const messagesRes = await getMessagesList(user_id!);
+        setMessages(messagesRes.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user info list:", error);
+    }
+  };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      setUserName(userData.username || '');
-      setUserRole(userData.role || '');
+    fetchData();
+  }, [modalVisible, user_id]);
+
+  const handleExchangeClick = async () => {
+    setConfirmLoading(true);
+    try {
+      const messageData: MessageType = {
+        senderId: user_id!,
+        senderName: userName,
+        recieverId: receiverId!,
+        contact: userInfo!.contact,
+        interest: userInfo!.interest,
+        language: userInfo!.language,
+      };
+      await sendMessage(messageData);
+      message.success("You have sent message successfully!");
+      setShowModal(false);
+    } catch (error) {
+      message.error("Failed to send message.");
+    } finally {
+      setConfirmLoading(false);
     }
-    setInitLoading(false);
-    if (modalVisible) {
-      dispatch(fetchMessages());
+  };
+
+  const markMessageAsRead = async (id: number) => {
+    try {
+      await messagesUpdate(id);
+      console.log("id",id);
+    } catch (error) {
+      console.error("Failed to update message read status:", error);
     }
-  }, [modalVisible, dispatch]);
+  };
 
   return (
-    <>
-      <Head>
-        <title>ITHunt</title>
-        <meta name="description" content="Generated by create next app" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className={styles.main}>
-        <Antdlayout>
-          <Header className={styles.header}>
-            ITHunt
-            <span className={styles.user}>
+      <>
+        <Head>
+          <title>ITHunt</title>
+          <meta name="description" content="Generated by create next app" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <main>
+          <AntdLayout>
+            <Header className={styles.header}>
+              ITHunt
+              <span className={styles.user}>
               <Dropdown menu={{ items: USER_ITEMS }}>
                 <span onClick={(e) => e.preventDefault()}>
                   <Space>
@@ -230,100 +258,97 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
                 </span>
               </Dropdown>
             </span>
-          </Header>
-          <Antdlayout className={styles.sectionInner}>
-            <Sider width={250}>
-              <Menu
-                mode="inline"
-                defaultOpenKeys={defaultOpenKeys}
-                selectedKeys={[activeMenu]}
-                style={{ height: "100%", borderRight: 0 }}
-                items={filteredItems}
-                onClick={handleMenuClick}
-                className={styles.menu}
-              />
-            </Sider>
-            <Antdlayout className={styles.sectionContent}>
-              {router.pathname !== "/dashboard" ? (
-                <Content className={styles.content}>{children}</Content>
-              ) : (
-                <Content>{children}</Content>
-              )}
-            </Antdlayout>
-          </Antdlayout>
-        </Antdlayout>
-        <Modal
-          title="Notification List"
-          visible={modalVisible}
-          onCancel={() => setModalVisible(false)}
-          footer={null}
-          className={styles.messagesWin}
-        >
-          <List
-            className="messages"
-            itemLayout="horizontal"
-            dataSource={messages}
-            renderItem={(item) => {
-              const interestsString = item.interests.join(", ");
-              const description = `Interest: ${interestsString};  Language: ${item.language}`;
-              const context = `Hello ${userName}, I am ${item.sender_name}. 
+            </Header>
+            <AntdLayout className={styles.sectionInner}>
+              <Sider width={250}>
+                <Menu
+                    mode="inline"
+                    defaultOpenKeys={defaultOpenKeys}
+                    selectedKeys={[activeMenu]}
+                    style={{ height: "100%", borderRight: 0 }}
+                    items={filteredItems}
+                    onClick={handleMenuClick}
+                    className={styles.menu}
+                />
+              </Sider>
+              <AntdLayout className={styles.sectionContent}>
+                {router.pathname !== "/dashboard" ? (
+                    <Content className={styles.content}>{children}</Content>
+                ) : (
+                    <Content>{children}</Content>
+                )}
+              </AntdLayout>
+            </AntdLayout>
+          </AntdLayout>
+          <Modal
+              title="Notification List"
+              open={modalVisible}
+              onCancel={() => setModalVisible(false)}
+              footer={null}
+              className={styles.messagesWin}
+          >
+            <List
+                className="messages"
+                itemLayout="horizontal"
+                dataSource={messages}
+                renderItem={(item) => {
+                  const description = `Interest: ${item.interest};  Language: ${item.language}`;
+                  const context = `Hello ${userName}, I am ${item.senderName}. 
               It's great to meet you! I've noticed we have similar interests or speak the same language. If you'd like to connect, here's my contact information: ${item.contact}.
               Looking forward to hearing from you!
-              ----${item.sender_name}`;
-
-              return (
-                <List.Item
-                  actions={[
-                    <Button
-                      key="more"
-                      type="primary"
-                      onClick={() => {
-                        setSelectedMessage(context);
-                        setShowModal(true);
-                      }}
-                    >
-                      More
-                    </Button>,
-                  ]}
+              ----${item.senderName}`;
+                  return (
+                      <List.Item
+                          actions={[
+                            <Button
+                                key="more"
+                                type="primary"
+                                onClick={() => {
+                                  setSelectedMessage(context);
+                                  setShowModal(true);
+                                  setReceiverID(item.senderId);
+                                  setReadStatus(item.read);
+                                  markMessageAsRead(item.id);
+                                }}
+                            >
+                              More
+                            </Button>,
+                          ]}
+                      >
+                        <Skeleton avatar title={false} loading={initLoading} active>
+                          <List.Item.Meta
+                              title={item.senderName}
+                              description={description}
+                          />
+                        </Skeleton>
+                      </List.Item>
+                  );
+                }}
+            />
+          </Modal>
+          <Modal
+              title="Messages"
+              open={showModal}
+              confirmLoading={confirmLoading}
+              onCancel={() => setShowModal(false)}
+              footer={[
+                <Button
+                    key="customButton"
+                    type="primary"
+                    onClick={handleExchangeClick}
                 >
-                  <Skeleton avatar title={false} loading={initLoading} active>
-                    <List.Item.Meta
-                      title={item.sender_name}
-                      description={description}
-                    />
-                  </Skeleton>
-                </List.Item>
-              );
-            }}
-          />
-        </Modal>
-        <Modal
-          title="Messages"
-          visible={showModal}
-          confirmLoading={confirmLoading}
-          onCancel={() => setShowModal(false)}
-          footer={[
-            <Button
-              key="customButton"
-              type="primary"
-              onClick={() => {
-                setConfirmLoading(true);
-                message.success(`You have sent message successfully!`);
-                setShowModal(false);
-                setConfirmLoading(false);
-              }}
-            >
-              Exchange Contact Method
-            </Button>,
-            <Button key="cancelButton" onClick={() => setShowModal(false)}>
-              Cancel
-            </Button>,
-          ]}
-        >
-          <p>{selectedMessage}</p>
-        </Modal>
-      </main>
-    </>
+                  Exchange Contact Information
+                </Button>,
+                <Button key="cancelButton" onClick={() => setShowModal(false)}>
+                  Cancel
+                </Button>,
+              ]}
+          >
+            <p>{selectedMessage}</p>
+          </Modal>
+        </main>
+      </>
   );
 };
+
 export default Layout;
