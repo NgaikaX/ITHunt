@@ -1,10 +1,11 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { getCourseDetails, getFeedback, getFeedbackList } from "@/api";
+import {feedbackAdd, getCourseDetails, getFeedback, getFeedbackList} from "@/api";
 import { CourseType, FeedbackType } from "@/type";
 import { Button, Card, Input, List, Modal, message } from "antd";
 import styles from "./index.module.css";
 import TextArea from "antd/es/input/TextArea";
+import {formatTimestamp} from "@/utils";
 
 export default function CourseDetail() {
   const router = useRouter();
@@ -14,8 +15,16 @@ export default function CourseDetail() {
   const [feedbackList, setFeedbackList] = useState<FeedbackType[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [userName, setUserName] = useState<string>('');
+  const [userID, setUserID] = useState<number>(null);
 
   useEffect(() => {
+      if (typeof window !== 'undefined') {
+          const userData = JSON.parse(localStorage.getItem('user') || '{}');
+          setUserName(userData.username || '');
+          setUserID(userData.id||null);
+      }
     if (id) {
       getCourseDetails(id as number).then((res) => {
         setCourse(res.data);
@@ -33,13 +42,23 @@ export default function CourseDetail() {
   const handleClick = () => {
     setShowModal(true);
   };
-
-  const handleSubmit = () => {
-    setConfirmLoading(true);
-    message.success(`You have submit the feedback successfully!`);
-    setShowModal(false);
-    setConfirmLoading(false);
-    //TODO:add a submit api later
+  const handleSubmit = async () =>{
+      const uploadDate = formatTimestamp(Date.now());
+      setConfirmLoading(true);
+      const values: FeedbackType = {
+          course_id: course.id,
+          feedback,
+          username: userName,
+          user_id:userID,
+          coursename:course.coursename,
+          uploaddate:uploadDate,
+      };
+      console.log("values", values);
+      await feedbackAdd(values);
+      message.success(`You have submitted the feedback successfully!`);
+      setShowModal(false);
+      setConfirmLoading(false);
+      setFeedback(""); // Clear feedback after submission
   };
 
   return (
@@ -97,7 +116,7 @@ export default function CourseDetail() {
           </Button>,
         ]}
       >
-        <TextArea rows={20} placeholder="Please enter your feedback here" />
+        <TextArea rows={20} placeholder="Please enter your feedback here" value={feedback} onChange={(e) => setFeedback(e.target.value)}/>
       </Modal>
     </div>
   );

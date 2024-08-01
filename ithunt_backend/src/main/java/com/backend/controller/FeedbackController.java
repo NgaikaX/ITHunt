@@ -5,14 +5,18 @@ import com.backend.common.AuthAccess;
 import com.backend.common.Result;
 import com.backend.entity.Course;
 import com.backend.entity.Feedback;
+import com.backend.entity.User;
 import com.backend.service.FeedbackService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.*;
 import com.backend.entity.Feedback;
 
 import javax.annotation.Resource;
 import java.util.List;
+
+import static com.backend.common.enums.ResultCodeEnum.SYSTEM_ERROR;
 
 /**
  * Function:
@@ -54,6 +58,23 @@ public class FeedbackController {
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Integer id){
         feedbackService.removeById(id);
+        return Result.success();
+    }
+    /**
+     * Add feedback
+     * */
+    @AuthAccess
+    @PostMapping("/add")
+    public Result add(@RequestBody Feedback feedback){
+        try {
+            feedbackService.save(feedback);
+        }catch (Exception e){
+            if(e instanceof DuplicateKeyException){
+                return Result.error("500","insert data error");
+            }else{
+                return Result.error(SYSTEM_ERROR);
+            }
+        }
         return Result.success();
     }
 }

@@ -59,7 +59,7 @@ public class GlossaryController {
         return Result.success();
     }
     /**
-     * edit user
+     * edit glossary
      * */
     @PutMapping("/update")
     public Result update(@RequestBody Glossary glossary){
@@ -67,7 +67,7 @@ public class GlossaryController {
         return Result.success();
     }
     /**
-     * delete user
+     * delete glossary
      * */
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Integer id){

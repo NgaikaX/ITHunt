@@ -58,9 +58,9 @@ export interface UserQuizType {
 }
 
 export interface SubmitQuizType {
-  id: number;
+  userId: number;
+  questionId:number;
+  userAnswer: string;
+  submitTime: string;
   coursename: string;
-  userid: string;
-  finishtime: string;
-  answer: string[];
 }

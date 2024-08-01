@@ -10,17 +10,19 @@ import {
 } from "antd";
 
 import { useRouter } from "next/router";
-import { questionAdd, questionUpdate } from "@/api";
+import {getQuestionCount, getSl_CourseByName, questionAdd, questionUpdate} from "@/api";
 import { QUESTION_TYPE } from "@/constants";
 import { useEffect, useState } from "react";
 import { QuestionType } from "@/type/question";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 import styles from "./index.module.css";
+import {formatTimestamp} from "@/utils";
 
 export default function QuestionForm({
   editData = {
     coursename: "",
+    options:null,
   },
 }: {
   editData?: Partial<QuestionType>;
@@ -36,22 +38,23 @@ export default function QuestionForm({
       form.setFieldsValue(editData);
       setType(editData.type || ""); // set default selected option
       setAnswer(editData.answer || "");
+      console.log("Edit data set in form:", editData);
+      console.log("Edit data type:", editData.type);
     }
-    console.log("Edit data set in form:", editData);
-    console.log("Edit data type:", editData.type);
   }, [editData, form]);
 
   const handleFinish = async (values: QuestionType) => {
+    values.uploaddate = formatTimestamp(Date.now());
     let questionData: any = {
       ...values,
       answer: values.answer, // Assign the selected index as string
     };
     if (editData?.id) {
-      await questionUpdate(values);
+      await questionUpdate({ ...editData, ...values });
     } else {
-      await questionAdd(questionData);
+      await questionAdd({ ...questionData });
+      console.log("get question data:", { ...editData, ...questionData });
     }
-    console.log("get question data:", questionData);
     message.success("Create Successfully");
     router.push("/selflearning/questionlist");
   };

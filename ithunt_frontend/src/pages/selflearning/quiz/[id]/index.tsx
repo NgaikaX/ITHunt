@@ -18,7 +18,7 @@ export default function Home() {
     const fetchQuestions = async () => {
       if (router.query.id) {
         try {
-          const res = await getQuizQuestions(router.query.id as string);
+          const res = await getQuizQuestions(router.query.id as number);
           setQuestions(res.data);
         } catch (error) {
           console.error("Error fetching questions:", error);
@@ -32,38 +32,6 @@ export default function Home() {
     fetchQuestions();
   }, [router.query.id]);
 
-  const sampleQuestions: QuestionType[] = [
-    {
-      id: "1",
-      num: 1,
-      course_id: "3",
-      coursename: "Sample Course",
-      type: "multiple choices",
-      content: "What is the capital of France?",
-      options: ["Berlin", "Madrid", "Paris", "Lisbon"],
-      answer: "C",
-    },
-    {
-      id: "2",
-      num: 2,
-      course_id: "3",
-      coursename: "Sample Course",
-      type: "true-false",
-      content: "Describe the water cycle.",
-      options: [],
-      answer: "The water cycle is...",
-    },
-    {
-      id: "3",
-      num: 3,
-      course_id: "3",
-      coursename: "Sample Course",
-      type: "free text",
-      content: "The Earth is flat.",
-      options: [],
-      answer: "false",
-    },
-  ];
   console.log("test questions", questions);
 
   if (loading) {

@@ -25,6 +25,7 @@ import {
 import { INTEREST, LANGUAGE } from "@/constants";
 import { UserCourseType, UserInfoType, UserQuizType } from "@/type";
 import {
+  getCourseCompletion, getQuizCompletion,
   getUserCourseList,
   getUserInfoList,
   getUserQuizList,
@@ -32,14 +33,12 @@ import {
 } from "@/api";
 import { SelectCommonPlacement } from "antd/es/_util/motion";
 import { useRouter } from "next/router";
-const inter = Inter({ subsets: ["latin"] });
 
-const coursePercent = 80;
-const quizPercent = 25;
-
-export default function Home() {
+export default function Dashboard() {
   const Option = Select.Option;
   const router = useRouter();
+  const [coursePercent, setCoursePercent] = useState<number>(null);
+  const [quizPercent, setQuizPercent] = useState<number>(null);
 
   //course progress
   const getCourseMessage = (percent: number) => {
@@ -55,7 +54,6 @@ export default function Home() {
       return "Congratulations on completing the course!";
     }
   };
-
   const getQuizMessage = (percent: number) => {
     if (percent < 25) {
       return "Every step counts. Keep pushing forward!";
@@ -89,55 +87,64 @@ export default function Home() {
     { value: INTEREST.SP, label: "Sport" },
     { value: INTEREST.NON, label: "None of them" },
   ];
-  const [interests1, setInterests1] = useState<string>("");
-  const [interests2, setInterests2] = useState<string>("");
+  const [interest, setInterest] = useState<string>("");
   const [formLocked, setFormLocked] = useState(false);
 
-  const handleFinish = async (values: UserInfoType) => {
-    const interests = [interests1, interests2];
-    const updatedValues = { ...values, interests };
-
-    await userInfoAdd(updatedValues);
-
-    message.success("Information Added Successfully");
-    await getUserInfoList(updatedValues);
-    message.success("search for study partners");
-    console.log("information", updatedValues);
-    setFormLocked(true); //lock the form
-  };
-
-  const handleEdit = () => {
-    setFormLocked(false); //unlock the form
-  };
   //course Table card and study partners card
   const [initLoading, setInitLoading] = useState(true);
   const [list, setList] = useState<UserInfoType[]>([]);
   const [course, setCourse] = useState<UserCourseType[]>([]);
   const [quiz, setQuiz] = useState<UserQuizType[]>([]);
   const [view, setView] = useState("course");
+  const[user_id, setUserID] = useState(null);
+
+  //Modal
+  const [showModal, setShowModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const handleFinish = async (values: UserInfoType) => {
+    //const interests = [interests1, interests2];
+    const updatedValues = { ...values};
+    await userInfoAdd(updatedValues);
+    message.success("Information Added Successfully");
+    await getUserInfoList(updatedValues);
+    message.success("search for study partners");
+    console.log("information", updatedValues);
+    setFormLocked(true); //lock the form
+  };
+  const handleEdit = () => {
+    setFormLocked(false); //unlock the form
+  };
 
   async function fetchData(value?: any) {
+    //get user's course list
     try {
+      if (user_id) {
+        //get coursePercent
+        const cPercent = await getCourseCompletion(user_id);
+        setCoursePercent(cPercent.data);
+        //get user course list
+        const courseres = await getUserCourseList(user_id);
+        const course = courseres.data;
+        setCourse(course || []);
+
+        //get quizPercent
+        const qPercent = await getQuizCompletion(user_id);
+        setQuizPercent(qPercent.data);
+        //get user's quiz list
+        const quizres = await getUserQuizList(user_id);
+        const quiz = quizres.data;
+        setQuiz(quiz || []);
+      }
       const res = await getUserInfoList({
         ...value,
       });
+
       //get study partner list
       const { data } = res; // Correctly access data here
       console.log("fetchData", data);
       setList(data || []); // Ensure list is an array
       setInitLoading(false); // set loading to false after data is fetched
-
-      //get user's course list
-      const courseres = await getUserCourseList();
-      const course = courseres.data;
-      console.log("user course", course);
-      setCourse(course || []);
-
-      //get user's quiz list
-      const quizres = await getUserQuizList();
-      const quiz = quizres.data;
-      console.log("user course", quiz);
-      setQuiz(quiz || []);
     } catch (error) {
       console.error("Failed to fetch user info list:", error);
       setInitLoading(false); // set loading to false even if there's an error
@@ -145,8 +152,18 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchData();
+    // Get user info from local storage
+    if (typeof window !== 'undefined') {
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      setUserID(userData.id || null);
+    }
   }, []);
+
+  useEffect(() => {
+    if (user_id !== null) {
+      fetchData(user_id);
+    }
+  }, [user_id]);
 
   const handleViewChange = (e: any) => {
     setView(e.target.value); // update views
@@ -162,14 +179,14 @@ export default function Home() {
       renderItem={(item) => {
         let completeString = "";
         {
-          item.complete === "true"
+          item.complete === true
             ? (completeString = "completed")
             : (completeString = "uncompleted");
         }
-        const description = `${completeString} | ${item.finishdate}`;
+        const description = `${completeString}`;
         let btn = "";
         {
-          item.complete === "true" ? (btn = "Review") : (btn = "Learn");
+          item.complete === 1 ? (btn = "Review") : (btn = "Learn");
         }
         return (
           <List.Item
@@ -180,7 +197,7 @@ export default function Home() {
                 type="primary"
                 onClick={() =>
                   //message.info(btn)
-                  router.push(`/selflearning/coursedetails/${item.id}`)
+                  router.push(`/selflearning/coursedetails/${item.courseId}`)
                 }
               >
                 {btn}
@@ -207,14 +224,14 @@ export default function Home() {
       renderItem={(item) => {
         let completeString = "";
         {
-          item.complete === "true"
+          item.complete === true
             ? (completeString = "completed")
             : (completeString = "uncompleted");
         }
-        const description = `${completeString} | Score: ${item.score} | ${item.finishdate}`;
+        const description = `${completeString} | Score: ${item.score} | ${item.submitTime}`;
         let btn = "";
         {
-          item.complete === "true" ? (btn = "Review") : (btn = "Attend");
+          item.complete === true ? (btn = "Review") : (btn = "Attend");
         }
         return (
           <List.Item
@@ -243,11 +260,6 @@ export default function Home() {
       }}
     />
   );
-
-  //Say Hello
-
-  const [showModal, setShowModal] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
 
   return (
     <>
@@ -324,31 +336,13 @@ export default function Home() {
               </Form.Item>
               <Form.Item
                 label="Your interest"
-                name="interest1"
-                style={{ marginBottom: "10px" }}
+                name="interest"
+                style={{ marginBottom: "20px" }}
                 rules={[{ required: true }]}
               >
                 <Select
                   placeholder="Select an Interest"
-                  onChange={(values) => setInterests1(values as string)}
-                  disabled={formLocked}
-                >
-                  {interestOptions.map((option) => (
-                    <Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="Your interest"
-                name="interest2"
-                style={{ marginBottom: "15px" }}
-                rules={[{ required: true }]}
-              >
-                <Select
-                  placeholder="Select an Interest"
-                  onChange={(values) => setInterests2(values as string)}
+                  //onChange={(values) => setInterest(values as string)}
                   disabled={formLocked}
                 >
                   {interestOptions.map((option) => (

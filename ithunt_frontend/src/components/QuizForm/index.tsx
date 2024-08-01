@@ -1,11 +1,14 @@
 // QuizPage.tsx
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { Button, message, Space, Card, Row, Col, Modal } from "antd";
 import { useRouter } from "next/router";
 import { QuestionType } from "@/type/question";
 import Question from "../Question";
 import styles from "./index.module.css";
 import test from "node:test";
+import {submitQuiz} from "@/api";
+import {SubmitQuizType} from "@/type";
+import {formatTimestamp} from "@/utils";
 
 export default function QuizPage({ questions }: { questions: QuestionType[] }) {
   console.log("questions", questions);
@@ -17,6 +20,7 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
   const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [userid, setUserId] = useState<number>(null);
   //console.log("questions test", questions);
 
   const handleNext = () => {
@@ -27,9 +31,25 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
     setCurrentQuestionIndex(currentQuestionIndex - 1);
   };
 
-  const handleSubmit = () => {
-    // TODO: Submit answers to the backend
-    //console.log("Submitted answers:", answers);
+  const handleSubmit = async () => {
+    const quizSubmissions: SubmitQuizType[] = questions.map((question, index) => ({
+      userId: userid,
+      courseId: question.course_id,
+      questionId: question.id,
+      userAnswer: answers[index] || "",
+      submitTime: formatTimestamp(Date.now()),
+      coursename: question.coursename,
+    }));
+    console.log("quizSubmissions",quizSubmissions);
+    try {
+      await submitQuiz(quizSubmissions);
+      message.success("Quiz submitted successfully!");
+      setShowModal(true);
+    } catch (error) {
+      console.error("Error submitting quiz:", error);
+      message.error("Failed to submit quiz.");
+    }
+    console.log("Submitted answers:", answers);
     //message.success("Quiz submitted successfully!");
     setShowModal(true);
     //router.push("/selflearning/quiz/resultpage");
@@ -70,6 +90,13 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
       </button>
     ));
   };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      setUserId(userData.id || null);
+    }
+  }, []);
 
   return (
     <div className={styles.containerWrap}>

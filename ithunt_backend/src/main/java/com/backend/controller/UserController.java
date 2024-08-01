@@ -25,7 +25,6 @@ import static com.baomidou.mybatisplus.extension.toolkit.Db.getOne;
 
 @CrossOrigin
 @RestController
-
 @RequestMapping("/user")
 public class UserController {
     @Resource
@@ -33,11 +32,11 @@ public class UserController {
     /**
      * Add user
      * */
+    @AuthAccess
     @PostMapping("/add")
     public Result add(@RequestBody User user){
         try {
-            userService.save(user);
-
+            userService.addUser(user);
         }catch (Exception e){
             if(e instanceof DuplicateKeyException){
                 return Result.error("500","insert data error");

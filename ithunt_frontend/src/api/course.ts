@@ -1,5 +1,5 @@
 import request from "./../utils/request";
-import {CourseQueryType, CourseType, FeedbackQueryType, UserType} from "./../type";
+import {CourseQueryType, CourseType, FeedbackQueryType, FeedbackType, UserType} from "./../type";
 import qs from "qs";
 import axios from "axios";
 
@@ -45,7 +45,9 @@ export async function getFeedback(id: number) {
 export async function feedbackDelete(id: number) {
   return request.delete(`/feedback/delete/${id}`);
 }
-
+export async function feedbackAdd(params: FeedbackType) {
+  return request.post("/feedback/add", params);
+}
 
 
 

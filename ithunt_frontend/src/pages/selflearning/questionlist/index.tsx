@@ -27,7 +27,7 @@ export default function Home() {
       title: "No.",
       dataIndex: "num",
       key: "num",
-      width: 100,
+      width: 50,
     },
     {
       title: "Question Type",
@@ -69,44 +69,20 @@ export default function Home() {
       width: 200,
     },
   ];
-
   async function fetchData(value?: any) {
     const res = await getQuestionList({
       current: pagination.current,
       pageSize: pagination.pageSize,
       ...value,
     });
-    const { data } = res;
-    /*console.log(
-      "%c[res]-21",
-      "font-size:13px; background:pink; color:#000",
-      res
-    );*/
-    setData(data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    setData(res.data.records);
+    setPagination({ ...pagination, current: 1, total: res.data.total });
   }
 
   const handleSearchFinish = async (values: QuestionQueryType) => {
-    console.log(
-      "%c[values]-21",
-      "font-size:13px; background:pink; color:#000",
-      values
-    );
-    const res = await getQuestionList({
-      ...values,
-      current: 1,
-      pageSize: pagination.pageSize,
-    });
-    /*console.log(
-      "%c[res.data]-21",
-      "font-size:13px; background:pink; color:#000",
-      res.data
-    );*/
-    setData(res.data);
-    setPagination({ ...pagination, current: 1, total: res.total });
+    fetchData(values)
   };
   const handleSearchReset = () => {
-    //console.log(form);
     form.resetFields();
   };
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -121,12 +97,11 @@ export default function Home() {
   const handleQuestionAdd = () => {
     router.push("/selflearning/addquestion");
   };
-  const handleQuestionEdit = (id: string) => {
-    console.log(id);
+  const handleQuestionEdit = (id: number) => {
+    console.log("id",id);
     router.push(`/selflearning/editquestion/${id}`);
   };
-  const handleQuestionDelete = async (id: string) => {
-    console.log(id);
+  const handleQuestionDelete = async (id: number) => {
     await questionDelete(id);
     message.success("Delete Sucessfully");
     fetchData(form.getFieldsValue());

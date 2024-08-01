@@ -8,12 +8,14 @@ spring:
         username: root
         password: 12345678
         url: jdbc:mysql://${ip}:3306/ithunt_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
-
     servlet:
         multipart:
             max-file-size: 20MB
             max-request-size: 20MB
 
+mybatis-plus:
+    type-aliases-package: com.backend.entity
+    mapper-locations: classpath:/mapper/*.xml
 ip: localhost
 
 

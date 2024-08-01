@@ -3,24 +3,26 @@ import request from "@/utils/request";
 import qs from "qs";
 
 export async function getQuestionList(params?: QuestionQueryType) {
-  return request.get(`/api/question?${qs.stringify(params)}`);
+  return request.get(`/question/questionList?${qs.stringify(params)}`);
 }
-export async function getQuizQuestions(id: string) {
-  return request.get(`/api/quiz/${id}`);
+//get question list by course_id
+export async function getQuizQuestions(id: number) {
+  return request.get(`/question/getQuestion/${id}`);
 }
 
 export async function questionAdd(params: QuestionType) {
-  return request.post("/api/question", params);
+  return request.post("/question/add", params);
 }
 
-export async function questionDelete(id: string) {
-  return request.delete(`/api/question/${id}`);
+export async function questionDelete(id: number) {
+  return request.delete(`/question/delete/${id}`);
 }
 
-export async function questionDetails(id: string) {
-  return request.get(`/api/question/${id}`);
+export async function questionDetails(id: number) {
+  return request.get(`/question/details//${id}`);
 }
 
 export async function questionUpdate(params: QuestionType) {
-  return request.put(`/api/question`, params);
+  return request.put(`/question/update`, params);
 }
+

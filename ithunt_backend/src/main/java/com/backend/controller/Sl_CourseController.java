@@ -60,6 +60,7 @@ public class Sl_CourseController {
         List<Sl_Course> sl_courseList = sl_courseService.list(new QueryWrapper<Sl_Course>().orderByDesc("id"));
         return Result.success(sl_courseList);
     }
+
     /**
      * edit self-learning course
      * */
@@ -89,7 +90,8 @@ public class Sl_CourseController {
      * */
     @PostMapping("/add")
     public Result add(@RequestBody Sl_Course sl_course){
-        try {sl_courseService.save(sl_course);
+        try {
+            sl_courseService.addCourse(sl_course);
 
         }catch (Exception e){
             if(e instanceof DuplicateKeyException){
@@ -100,6 +102,7 @@ public class Sl_CourseController {
         }
         return Result.success();
     }
+
 
     private static final String ROOT_PATH =  System.getProperty("user.dir") + File.separator + "files";
     //a way of upload file

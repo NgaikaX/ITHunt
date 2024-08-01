@@ -23,6 +23,7 @@ const userSlice = createSlice({
   },
   reducers: {
     loginUser(state, action: PayloadAction<UserType>) {
+      localStorage.setItem("user", JSON.stringify(action.payload));
       state.email = action.payload.email;
       state.password = action.payload.password;
       state.role = action.payload.role;

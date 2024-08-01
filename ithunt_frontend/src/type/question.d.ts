@@ -8,12 +8,13 @@ export interface QuestionQueryType {
   pageSize?: number;
 }
 export interface QuestionType {
-  course_id: string;
+  course_id: number;
   coursename: string;
   type: string;
   num: number;
   content: string;
   answer: string;
-  id?: string;
+  id?: number;
+  uploaddate:string;
   options: string[];
 }

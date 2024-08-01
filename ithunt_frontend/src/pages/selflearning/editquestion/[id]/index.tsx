@@ -10,11 +10,10 @@ export default function Home() {
 
   useEffect(() => {
     if (id) {
-      questionDetails(id as string).then((res) => {
+      questionDetails(id as number).then((res) => {
         setData(res.data);
         /*console.log(
           "%c[res]-21",
-          "font-size:13px; background:pink; color:#000",
           res
         );*/
       });
