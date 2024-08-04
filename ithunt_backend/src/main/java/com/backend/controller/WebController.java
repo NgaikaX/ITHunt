@@ -27,7 +27,7 @@ public class WebController {
         return Result.success(name);
     }
 
-
+    @AuthAccess
     @PostMapping("/login")
     public Result login(@RequestBody User user) {
         if (StrUtil.isBlank(user.getEmail()) || StrUtil.isBlank(user.getPassword())) {
