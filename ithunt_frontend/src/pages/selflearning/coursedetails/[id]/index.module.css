@@ -14,4 +14,8 @@
 }
 .quizentrance {
   background-color: #4096ff9c;
+  margin-bottom: 20px;
+}
+.finishBtn{
+  width: 100%;
 }

@@ -4,6 +4,8 @@ import { Collapse, Form, Table } from "antd";
 import {getAllVocabularyList} from "@/api";
 import styles from "./index.module.css";
 import { VocabularyType } from "@/type/glossary";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.bubble.css";
 
 export default function Home() {
   useEffect(() => {
@@ -24,7 +26,11 @@ export default function Home() {
   const items: CollapseProps["items"] = itemsList.map((item, index) => ({
     key: String(index),
     label: item.vocabulary,
-    children: <p>{item.explanation}</p>,
+    children: (<ReactQuill
+        value={item.explanation}
+        readOnly={true}
+        theme="bubble" // 使用 bubble 主题
+    />),
   }));
 
   return (

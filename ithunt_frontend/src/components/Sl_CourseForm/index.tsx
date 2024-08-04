@@ -19,8 +19,11 @@ import {
 import {coverUpload, slCourseAdd, slCourseCoverUpload, slCourseUpdate, slCourseVideoUpload} from "@/api";
 import styles from "./index.module.css";
 import {formatTimestamp} from "@/utils";
+import 'react-quill/dist/quill.snow.css';
+import dynamic from "next/dynamic";
 
 const { TextArea } = Input;
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -44,7 +47,7 @@ const beforeUploadImg = (file) => {
 const beforeUploadVideo = (file) => {
   const isMp4 = file.type === "video/mp4";
   if (!isMp4) {
-    message.error("You can only upload JPG/PNG file!");
+    message.error("You can only upload MP4 file!");
   }
   return isMp4;
 };
@@ -57,6 +60,7 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
   const [videoUrl, setVideoUrl] = useState<string>();
   const [fileList, setFileList] = useState<File[]>([]);
   const [videoList, setVideoList] = useState<File[]>([]);
+  const [description, setDescription] = useState<string>("");
   useEffect(() => {
     if (editData.id) {
       form.setFieldsValue(editData);
@@ -66,12 +70,16 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
       if (editData.videourl) {
         setVideoUrl(editData.videourl); // Assuming editData.video is URL of the video
       }
+      if (editData.description) {
+        setDescription(editData.description); // 设置编辑时的描述内容
+      }
     }
     console.log("Edit data set in form:", editData);
   }, [editData, form]);
 
   const handleFinish = async (values: Sl_CourseType) => {
     values.uploaddate = formatTimestamp(Date.now());  // Set current date and time
+    values.description = description;
     setLoading(true);
     let coverUrl: string;
     let videoUrl: string;
@@ -79,7 +87,6 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
     if (fileList.length > 0) {
       formData.append("cover", fileList[0]);
       const uploadData = await slCourseCoverUpload(formData as FormData);
-      //console.log("uploadData", uploadData); // 打印上传响应数据
       coverUrl = uploadData.data; // 根据返回的数据结构获取URL
     }
     if (videoList.length > 0){
@@ -164,13 +171,7 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
         >
           <Input placeholder="Enter a course name" />
         </Form.Item>
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ required: true }]}
-        >
-          <TextArea rows={8} placeholder="Enter the description" />
-        </Form.Item>
+
         <Form.Item label="Video" name="video">
           <Space direction="vertical" style={{ width: "100%" }} size="large">
             {videoUrl ? (
@@ -208,6 +209,17 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
               )}
             </Upload>
           </Space>
+        </Form.Item>
+        <Form.Item
+            label="Description"
+            name="description"
+            rules={[{ required: true }]}
+        >
+          <ReactQuill  className={styles.publishquill}
+                       theme="snow"
+                       placeholder="Enter the description"
+                       value={description}
+                       onChange={setDescription}/>
         </Form.Item>
         <Form.Item label=" " colon={false}>
           <Space>

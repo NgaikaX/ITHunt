@@ -135,13 +135,6 @@ export default function CourseForm( {editData={},}:{editData?:Partial<CourseType
           <Input placeholder="Enter a course name" />
         </Form.Item>
         <Form.Item
-          label="Lecturer"
-          name="lecturer"
-          rules={[{ required: true }]}
-        >
-          <Input placeholder="Enter the lecturer" />
-        </Form.Item>
-        <Form.Item
           label="Description"
           name="description"
           rules={[{ required: true }]}

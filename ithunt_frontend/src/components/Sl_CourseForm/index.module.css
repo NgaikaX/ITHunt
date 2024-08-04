@@ -18,3 +18,13 @@
   height: 100%;
   width: 100%;
 }
+.publishquill {
+  padding-bottom: 30px;
+  height: 400px;
+  .ql-container {
+    min-height: 200px; /* 设置最小高度 */
+  }
+  .ql-editor {
+    height: 90%; /* 设置编辑器内容区域的高度 */
+  }
+}

@@ -7,8 +7,6 @@ import styles from "./index.module.css";
 import {glossaryUpdate, vocabularyAdd} from "@/api/glossary";
 import { VocabularyType } from "@/type/glossary";
 import {formatTimestamp} from "@/utils";
-import {CourseType} from "@/type";
-import {slCourseAdd, slCourseUpdate} from "@/api";
 
 export default function GlossaryForm({editData={},}:{editData?:Partial<VocabularyType>}) {
   const [form] = Form.useForm();
@@ -38,7 +36,7 @@ export default function GlossaryForm({editData={},}:{editData?:Partial<Vocabular
       <Form
         form={form}
         labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }}
+        wrapperCol={{ span: 16 }}
         layout="horizontal"
         onFinish={handleFinish}
       >
@@ -55,7 +53,7 @@ export default function GlossaryForm({editData={},}:{editData?:Partial<Vocabular
           rules={[{ required: true }]}
         >
           <ReactQuill
-            className={styles.publishquill}
+              className={styles.publishquill}
             theme="snow"
             placeholder="Enter the content"
           />
