@@ -37,4 +37,11 @@ public class MessageController {
         messageService.updateUserMessage(id);
         return Result.success();
     }
+
+    @AuthAccess
+    @DeleteMapping("/delete")
+    public Result deleteMessage(@RequestParam Integer id){
+        messageService.deleteMessage(id);
+        return Result.success();
+    }
 }

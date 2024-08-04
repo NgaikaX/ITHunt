@@ -22,7 +22,7 @@ import {
   ReadOutlined,
 } from "@ant-design/icons";
 import Head from "next/head";
-import { getUserInfo, messagesUpdate, sendMessage, userLogout, getMessagesList } from "@/api";
+import {getUserInfo, messagesUpdate, sendMessage, userLogout, getMessagesList, messagesDelete} from "@/api";
 import { USER_ROLE } from "@/constants";
 import { MessageType, UserInfoType } from "@/type";
 
@@ -110,7 +110,7 @@ const ITEMS = [
     ],
   },
   {
-    key: "users",
+    key: "/users",
     label: "Users",
     icon: <TeamOutlined />,
     role: USER_ROLE.ADMIN,
@@ -145,7 +145,8 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
           label: (
               <span
                   onClick={async () => {
-                    await userLogout();
+                    //await userLogout();
+                    localStorage.removeItem("user");
                     message.success("Log out successfully");
                     router.push("/login");
                   }}
@@ -176,17 +177,10 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   }, [userRole]);
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
-    router.push(`http://localhost:3000/${key}`);
+    router.push(`http://localhost:3000${key}`);
   };
 
-  const fetchData = async () => {
-    if (typeof window !== "undefined") {
-      const userData = JSON.parse(localStorage.getItem("user") || "{}");
-      setUserName(userData.username || "");
-      setUserRole(userData.role || "");
-      setUserId(userData.id);
-    }
-
+  const fetchData = async (value?: any) => {
     try {
       const infoRes = await getUserInfo(user_id!);
       setUserInfo(infoRes.data);
@@ -202,7 +196,18 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (typeof window !== "undefined") {
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      setUserName(userData.username || "");
+      setUserRole(userData.role || "");
+      setUserId(userData.id);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user_id !== null) {
+      fetchData(user_id);
+    }
   }, [modalVisible, user_id]);
 
   const handleExchangeClick = async () => {
@@ -229,10 +234,13 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const markMessageAsRead = async (id: number) => {
     try {
       await messagesUpdate(id);
-      console.log("id",id);
     } catch (error) {
       console.error("Failed to update message read status:", error);
     }
+  };
+  const handleDeleteMessage = async (id: number) => {
+    await messagesDelete(id);
+    message.success("Message deleted successfully!");
   };
 
   return (
@@ -302,16 +310,23 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                           actions={[
                             <Button
                                 key="more"
-                                type="primary"
+                                type={item.read ? "default" : "primary"}//if message is read, btn chang to default
                                 onClick={() => {
                                   setSelectedMessage(context);
                                   setShowModal(true);
                                   setReceiverID(item.senderId);
-                                  setReadStatus(item.read);
                                   markMessageAsRead(item.id);
                                 }}
                             >
                               More
+                            </Button>,
+                            <Button
+                                key="delete"
+                                type="link"
+                                danger
+                                onClick={() => handleDeleteMessage(item.id)}
+                            >
+                              Delete
                             </Button>,
                           ]}
                       >

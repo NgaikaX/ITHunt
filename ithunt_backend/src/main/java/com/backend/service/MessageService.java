@@ -36,6 +36,9 @@ public class MessageService extends ServiceImpl<MessageMapper, Message> {
         Message readMessage = messageMapper.selectById(id);
         readMessage.setRead(true);
         messageMapper.updateById(readMessage);
-        System.out.println(readMessage.isRead());
+    }
+
+    public void deleteMessage(@RequestParam Integer id){
+        messageMapper.deleteById(id);
     }
 }
