@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
-import {RootState} from "@/store";
 
 const withAuth = (WrappedComponent: React.ComponentType<any>) => {
     const Wrapper: React.FC<any> = (props) => {
         const router = useRouter();
         const [loading, setLoading] = useState(true);
-        const token = useSelector((state: RootState) => state.user.token);
-
+        const [token, setToken] = useState<string | null>(null);
 
         useEffect(() => {
-            if (!token) {
-                router.push('/login');
-            } else {
+            // 从 localStorage 中获取 token
+            const userData = JSON.parse(localStorage.getItem("user") || "{}");
+
+            //const storedToken = localStorage.getItem('token');
+            if (userData) {
+                setToken(userData.token);
                 setLoading(false);
+            } else {
+                router.push('/login');
             }
-        }, [token, router]);
+        }, [router]);
 
         if (loading) {
             return <div>Loading...</div>; // 可以使用一个实际的加载组件
