@@ -1,7 +1,5 @@
-import { getQuestionList, getQuizQuestions, getUserDetails } from "@/api";
+import { getQuizQuestions } from "@/api";
 import QuizForm from "@/components/QuizForm";
-import UserForm from "@/components/UserForm";
-import { QUESTION_TYPE } from "@/constants";
 import { QuestionType } from "@/type/question";
 import { Alert, Spin } from "antd";
 import { useRouter } from "next/router";
@@ -28,11 +26,8 @@ export default function Home() {
         }
       }
     };
-
     fetchQuestions();
   }, [router.query.id]);
-
-  console.log("test questions", questions);
 
   if (loading) {
     return <Spin tip="Loading..." />;
