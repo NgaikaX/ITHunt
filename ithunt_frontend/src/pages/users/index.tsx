@@ -76,7 +76,7 @@ export default function Home() {
       ...values,
       pageNum: pagination.pageNum,
       pageSize: pagination.pageSize});
-    console.log("%c[res.data]-21", res.data);
+    console.log("%c[res.data]-21", res);
     setData(res.data.records);
     setPagination({ ...pagination, current: 1, total: res.data.total });
   }
