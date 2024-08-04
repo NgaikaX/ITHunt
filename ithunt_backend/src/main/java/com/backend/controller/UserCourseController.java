@@ -38,4 +38,11 @@ public class UserCourseController {
         int completionRate = userCourseService.getCourseCompletionRate(user_id);
         return Result.success(completionRate);
     }
+    @AuthAccess
+    @PutMapping("/updateComplete")
+    public Result updateComplete(@RequestBody UserCourse userCourse){
+        userCourseService.updateComplete(userCourse);
+        return Result.success();
+    }
+
 }

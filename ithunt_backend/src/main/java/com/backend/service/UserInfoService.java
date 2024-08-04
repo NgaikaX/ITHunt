@@ -21,9 +21,9 @@ public class UserInfoService extends ServiceImpl<UserInfoMapper, UserInfo> {
     @Resource
     UserInfoMapper userInfoMapper;
 
-    public UserInfo infoExsit(Integer userId){
+    public UserInfo infoExsit(Integer user_id){
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id",userId);
+        queryWrapper.eq("user_id",user_id);
         return  userInfoMapper.selectOne(queryWrapper);
     }
 

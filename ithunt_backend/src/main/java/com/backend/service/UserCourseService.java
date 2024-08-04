@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Function:
@@ -31,4 +32,14 @@ public class UserCourseService extends ServiceImpl<UserCourseMapper, UserCourse>
        int completionRate = 100 * (int)completedCourses / userCourses.size();
        return completionRate;
     }
+
+    public  void updateComplete(UserCourse userCourse){
+        QueryWrapper<UserCourse> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userCourse.getUserId());
+        queryWrapper.eq("course_id", userCourse.getCourseId());
+        UserCourse needUpdate = userCourseMapper.selectOne(queryWrapper);
+        needUpdate.setComplete(true);
+        userCourseMapper.updateById(needUpdate);
+    }
+
 }

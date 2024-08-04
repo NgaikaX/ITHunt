@@ -1,5 +1,6 @@
 package com.backend.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.backend.entity.Sl_Course;
 import com.backend.entity.User;
 import com.backend.entity.UserCourse;
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -27,6 +29,8 @@ public class Sl_CourseService extends ServiceImpl<Sl_CourseMapper, Sl_Course> {
     @Resource
     UserCourseMapper userCourseMapper;
 
+    private static final String ROOT_PATH =  System.getProperty("user.dir") + File.separator + "files";
+
     public void addCourse(Sl_Course course){
         sl_courseMapper.insert(course);
 
@@ -39,6 +43,40 @@ public class Sl_CourseService extends ServiceImpl<Sl_CourseMapper, Sl_Course> {
             userCourse.setCoursename(course.getCoursename());
             userCourse.setComplete(false);
             userCourseMapper.insert(userCourse);
+        }
+    }
+
+    public void deleteCourse(Integer id){
+        //delete file from `files`
+        Sl_Course course = sl_courseMapper.selectById(id);
+        if (course != null) {
+            deleteSlCourseFile(course);
+            //delete the course from the database
+            sl_courseMapper.deleteById(id);
+        }
+    }
+    public void deleteSlCourseFile(Sl_Course course){
+        String coverPath = course.getCover();
+        String videoPath = course.getVideourl();
+
+        // convert url to a file path
+        String absoluteCoverPath = ROOT_PATH + File.separator + coverPath.substring(coverPath.lastIndexOf("/") + 1);
+        String absoluteVideoPath = ROOT_PATH + File.separator + videoPath.substring(videoPath.lastIndexOf("/") + 1);
+
+        //delete cover
+        if (StrUtil.isNotBlank(absoluteCoverPath)) {
+            File coverFile = new File(absoluteCoverPath);
+            if (coverFile.exists()) {
+                coverFile.delete();
+            }
+        }
+
+        //delete video
+        if (StrUtil.isNotBlank(absoluteVideoPath)) {
+            File videoFile = new File(absoluteVideoPath);
+            if (videoFile.exists()) {
+                videoFile.delete();
+            }
         }
     }
 

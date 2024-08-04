@@ -7,7 +7,6 @@ export interface CourseType {
   coursename: string;
   cover: string;
   description: string;
-  lecturer: string;
   uploaddate: string;
   id?: number;
 }

@@ -136,6 +136,7 @@ export default function Dashboard() {
 
       //get User info
       const infoRes = await getUserInfo(user_id);
+      console.log("User Info Response2:", infoRes);  // Log the response
       const userInfoData = infoRes.data;
       setUserInfo(userInfoData);
 

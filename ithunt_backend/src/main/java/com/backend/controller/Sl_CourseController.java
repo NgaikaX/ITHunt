@@ -21,6 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static com.backend.common.enums.ResultCodeEnum.SYSTEM_ERROR;
 
 /**
@@ -31,6 +34,7 @@ import static com.backend.common.enums.ResultCodeEnum.SYSTEM_ERROR;
 @RestController
 @RequestMapping("/sl_course")
 public class Sl_CourseController {
+
     @Value("${ip:localhost}")
     String ip;
 
@@ -55,6 +59,7 @@ public class Sl_CourseController {
     /**
      * get all self-learning course
      * */
+
     @GetMapping("/allSl_Course")
     public Result getAllSl_CourseList(){
         List<Sl_Course> sl_courseList = sl_courseService.list(new QueryWrapper<Sl_Course>().orderByDesc("id"));
@@ -74,9 +79,10 @@ public class Sl_CourseController {
      * */
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Integer id){
-        sl_courseService.removeById(id);
+        sl_courseService.deleteCourse(id);
         return Result.success();
     }
+
     /**
      * get self-learning course details by id
      * */
@@ -85,6 +91,7 @@ public class Sl_CourseController {
         Sl_Course sl_course = sl_courseService.getById(id);
         return Result.success(sl_course);
     }
+
     /**
      * add a new self-learning course
      * */
@@ -102,59 +109,6 @@ public class Sl_CourseController {
         }
         return Result.success();
     }
+    private static final String ROOT_PATH = System.getProperty("user.dir") + File.separator + "files";
 
-
-    private static final String ROOT_PATH =  System.getProperty("user.dir") + File.separator + "files";
-    //a way of upload file
-    public String uplpadFile(MultipartFile file) throws IOException{
-        String originalFilename = file.getOriginalFilename();//文件原始名称
-        String mainName = FileUtil.mainName(originalFilename);//文件名称 e.g.aaa
-        String extName = FileUtil.extName(originalFilename);//文件后缀 e.g. png
-        if(!FileUtil.exist(ROOT_PATH)){//父级文件是否存在
-            FileUtil.mkdir(ROOT_PATH);//当前文件的父级目录不存在，就创建
-        }
-        if(FileUtil.exist(ROOT_PATH + File.separator + originalFilename)){//如果当前目录存在一个重名的文件
-            originalFilename = System.currentTimeMillis() + "_" + mainName + "." + extName;
-        }
-        File saveFile = new File(ROOT_PATH + File.separator + originalFilename);
-        file.transferTo(saveFile);
-        String url = "http://"+ ip + ":"+ port + "/file/download/" + originalFilename;
-        return url;
-    }
-    /**
-     * upload a new cover of self-learning course
-     * */
-    @AuthAccess
-    @PostMapping("/upload")
-    public Result upload(@RequestParam("cover") MultipartFile file) throws IOException {
-        String url = uplpadFile(file);
-        return Result.success(url);//file download link
-    }
-
-    /**
-     * upload a video of self-learning course
-     * */
-    @AuthAccess
-    @PostMapping("/uploadVideo")
-    public Result uploadVideo(@RequestParam("video") MultipartFile file) throws IOException {
-        String url = uplpadFile(file);
-        return Result.success(url);//file download link
-    }
-
-    /**
-     * download a file
-     * */
-    @AuthAccess
-    @GetMapping("/download/{fileName}")
-    public void download(@PathVariable String fileName, HttpServletResponse response) throws IOException {
-        String filePath = ROOT_PATH + File.separator + fileName;
-        if(!FileUtil.exist(filePath)){
-            return;
-        }
-        byte[] bytes = FileUtil.readBytes(filePath);
-        ServletOutputStream outputStream = response.getOutputStream();
-        outputStream.write(bytes);//字节流数组
-        outputStream.flush();//刷新
-        outputStream.close();
-    }
 }

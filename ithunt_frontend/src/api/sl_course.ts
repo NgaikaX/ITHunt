@@ -11,7 +11,7 @@ export async function getAllSl_CourseList() {
   return request.get(`/sl_course/allSl_Course`);
 }
 //get a course's details
-export async function getSlCourseDetails(id: string) {
+export async function getSlCourseDetails(id: number) {
   return request.get(`/sl_course/details/${id}`);
 }
 //add a couse
@@ -19,7 +19,7 @@ export async function slCourseAdd(params: Sl_CourseType) {
   return request.post("/sl_course/add", params);
 }
 
-export async function slCourseDelete(id: string) {
+export async function slCourseDelete(id: number) {
   return request.delete(`/sl_course/delete/${id}`);
 }
 
@@ -29,7 +29,7 @@ export async function slCourseUpdate(params: Sl_CourseType) {
 
 // upload cover
 export async function slCourseCoverUpload(cover: FormData) {
-  return axios.post("http://localhost:9090/sl_course/upload", cover, {
+  return axios.post("http://localhost:9090/file/upload", cover, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -37,7 +37,7 @@ export async function slCourseCoverUpload(cover: FormData) {
 }
 // upload video
 export async function slCourseVideoUpload(video: FormData) {
-  return axios.post("http://localhost:9090/sl_course/uploadVideo", video, {
+  return axios.post("http://localhost:9090/file/uploadVideo", video, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

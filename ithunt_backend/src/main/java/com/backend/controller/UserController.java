@@ -77,6 +77,7 @@ public class UserController {
     /**
      * pagination
      * */
+    @AuthAccess
     @GetMapping ("/selectByPage")
     public Result selectByPage( @RequestParam(required = false) String username, @RequestParam(required = false) String role,@RequestParam Integer pageNum,@RequestParam Integer pageSize){
         QueryWrapper<User> queryWrapper = new QueryWrapper<User>().orderByDesc("id");
