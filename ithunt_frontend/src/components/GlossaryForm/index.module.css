@@ -3,7 +3,12 @@
   margin-bottom: 0px;
 }
 .publishquill {
+  padding-bottom: 30px;
+  height: 400px;
+  .ql-container {
+    min-height: 200px; /* 设置最小高度 */
+  }
   .ql-editor {
-    min-height: 600px;
+    height: 90%; /* 设置编辑器内容区域的高度 */
   }
 }
