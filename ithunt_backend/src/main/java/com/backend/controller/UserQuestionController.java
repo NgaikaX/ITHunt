@@ -3,6 +3,7 @@ package com.backend.controller;
 import com.backend.common.AuthAccess;
 import com.backend.common.Result;
 import com.backend.entity.UserQuestion;
+import com.backend.entity.UserQuestionResult;
 import com.backend.mapper.QuestionMapper;
 import com.backend.service.UserQuestionService;
 import org.springframework.web.bind.annotation.*;
@@ -27,17 +28,18 @@ public class UserQuestionController {
         return Result.success(hasSubmitted);
     }
     /**
-     * get user answer/question by user id
+     * get user answer/question by user_id and course_id
      * */
-    @GetMapping("/UserQuestionList")
-    //TODO:改成result page 回显
-    public Result getUserCourse(@RequestParam Integer user_id){
-        List<UserQuestion> userQuestionList = userQuestionService.getQuestionByUserId(user_id);
+    @AuthAccess
+    @GetMapping("/getUserQuestionAnswer")
+    public Result getUserQuestionAnswer(@RequestParam Integer userId,@RequestParam Integer courseId ){
+        List<UserQuestionResult> userQuestionList = userQuestionService.getUserQuestionByCourse(userId,courseId);
         return Result.success(userQuestionList);
     }
     /**
      * user submit quiz
      * */
+    @AuthAccess
     @PostMapping("/submitQuiz")
     public Result submitQuiz(@RequestBody List<UserQuestion> answers) {
         int userId = answers.get(0).getUserId();

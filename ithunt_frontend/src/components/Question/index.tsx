@@ -7,11 +7,12 @@ import { useEffect } from "react";
 export default function Question({
   question,
   onAnswerChange,
-  answer,
+  answer, isReviewMode = false,
 }: {
-  question: QuestionType;
+  question: any;
   onAnswerChange: (answer: string) => void;
   answer: string;
+  isReviewMode?: boolean;
 }) {
   const [form] = Form.useForm();
 
@@ -20,7 +21,10 @@ export default function Question({
   }, [answer, form]);
 
   const renderQuestionContent = () => {
-    switch (question.type) {
+      const correctAnswer = question && (isReviewMode ? question.correctAnswer: question.answer);
+      const isCorrect = isReviewMode && correctAnswer !== undefined && correctAnswer === answer;
+
+      switch (question?.type) {
       case QUESTION_TYPE.MUL:
         return (
           <>
@@ -29,18 +33,27 @@ export default function Question({
             </Form.Item>
             <Form.Item name="answer" label="Options">
               <Radio.Group
-                className={styles.optionlist}
-                onChange={(e) => onAnswerChange(e.target.value)}
+                  className={styles.optionlist}
+                  onChange={(e) => onAnswerChange(e.target.value)}
+                  disabled={isReviewMode}
+                  value={answer}
               >
                 <Space direction="vertical">
-                  {question.options.map((option, index) => (
-                    <Radio value={index} key={index}>
-                      {String.fromCharCode(65 + index)}. {option}
-                    </Radio>
+                    {question.options.map((option, index) => (
+                        <Radio value={index.toString()} key={index}>
+                            {String.fromCharCode(65 + index)}. {option}
+                        </Radio>
                   ))}
                 </Space>
               </Radio.Group>
             </Form.Item>
+              {isReviewMode && !isCorrect && (
+                  <Form.Item label="Correct Answer">
+                <span style={{ color: "red" }}>
+                 {question.options[correctAnswer]}
+                </span>
+                  </Form.Item>
+              )}
           </>
         );
       case QUESTION_TYPE.FREE_TEXT:
@@ -55,10 +68,20 @@ export default function Question({
                 onChange={(e) => onAnswerChange(e.target.value)}
                 rows={8}
                 className={styles.freetext}
+                disabled={isReviewMode}
+                value={answer}
               />
             </Form.Item>
+              {isReviewMode && !isCorrect && (
+                  <Form.Item label="Correct Answer">
+                <span style={{ color: 'red' }}>
+                  {correctAnswer}
+                </span>
+                  </Form.Item>
+              )}
           </>
         );
+
       case QUESTION_TYPE.TF:
         return (
           <>
@@ -66,11 +89,22 @@ export default function Question({
               <span>{question.content}</span>
             </Form.Item>
             <Form.Item name="answer" label="Answer">
-              <Radio.Group onChange={(e) => onAnswerChange(e.target.value)}>
+              <Radio.Group
+                  onChange={(e) => onAnswerChange(e.target.value)}
+                  disabled={isReviewMode}
+                  value={answer}
+              >
                 <Radio value="true">True</Radio>
                 <Radio value="false">False</Radio>
               </Radio.Group>
             </Form.Item>
+              {isReviewMode && !isCorrect && (
+                  <Form.Item label="Correct Answer">
+                <span style={{ color: 'red' }}>
+                  {correctAnswer === "true" ? 'True' : 'False'}
+                </span>
+                  </Form.Item>
+              )}
           </>
         );
       default:

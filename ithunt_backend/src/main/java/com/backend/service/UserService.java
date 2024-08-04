@@ -58,16 +58,16 @@ public class UserService extends ServiceImpl<UserMapper,User> {
     }
 
     public void addUser(User user) {
-        // 保存用户
+        // save user
         userMapper.insert(user);
 
-        // 获取所有课程
+        // get all course
         List<Sl_Course> courses = sl_courseMapper.selectList(null);
 
-        // 获取所有有问题的课程
+        // get all courses with questions
         List<Sl_Course> coursesWithQuestions = sl_courseMapper.selectCoursesWithQuestions();
 
-      // 为每个课程创建用户课程关联
+      // connect user with user course
         for (Sl_Course course : courses) {
             UserCourse userCourse = new UserCourse();
             userCourse.setUserId(user.getId());

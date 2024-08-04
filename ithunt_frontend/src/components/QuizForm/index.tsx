@@ -2,17 +2,13 @@
 import {useEffect, useState} from "react";
 import { Button, message, Space, Card, Row, Col, Modal } from "antd";
 import { useRouter } from "next/router";
-import { QuestionType } from "@/type/question";
 import Question from "../Question";
 import styles from "./index.module.css";
-import test from "node:test";
 import {submitQuiz} from "@/api";
 import {SubmitQuizType} from "@/type";
 import {formatTimestamp} from "@/utils";
 
-export default function QuizPage({ questions }: { questions: QuestionType[] }) {
-  console.log("questions", questions);
-
+export default function QuizPage({ questions, isReviewMode = false }: { questions, isReviewMode?: boolean }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const router = useRouter();
@@ -21,7 +17,30 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
   const [showModal, setShowModal] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [userid, setUserId] = useState<number>(null);
-  //console.log("questions test", questions);
+  const currentQuestion = questions[currentQuestionIndex];
+  const id = router.query.id;
+
+  // 调试输出 questions
+  useEffect(() => {
+    console.log("questions:", questions);
+  }, [questions]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      setUserId(userData.id || null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isReviewMode) {
+      const reviewAnswers = questions.reduce((acc, question, index) => {
+        acc[index] = question.userAnswer || ""; // Ensure userAnswer exists
+        return acc;
+      }, {});
+      setAnswers(reviewAnswers);
+    }
+  }, [isReviewMode, questions])
 
   const handleNext = () => {
     setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -52,16 +71,13 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
     console.log("Submitted answers:", answers);
     //message.success("Quiz submitted successfully!");
     setShowModal(true);
-    //router.push("/selflearning/quiz/resultpage");
   };
   const handleReview = () => {
-    router.push("/selflearning/quiz/resultpage");
+    router.push(`/selflearning/quizresult/${id}`);
   };
   const handleBack = () => {
     router.back();
   };
-
-  const currentQuestion = questions[currentQuestionIndex];
 
   const handleNavigationClick = (index: number) => {
     setCurrentQuestionIndex(index);
@@ -91,13 +107,6 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
     ));
   };
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      setUserId(userData.id || null);
-    }
-  }, []);
-
   return (
     <div className={styles.containerWrap}>
       <h1>{courseName}</h1>
@@ -112,6 +121,7 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
                 handleAnswerChange(currentQuestionIndex, answer)
               }
               answer={answers[currentQuestionIndex] || ""}
+              isReviewMode={isReviewMode}
             />
           </Card>
           <div className={styles.btn}>
@@ -132,7 +142,7 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
                 <Button
                   type="primary"
                   onClick={handleSubmit}
-                  disabled={currentQuestionIndex !== questions.length - 1}
+                  disabled={isReviewMode ||currentQuestionIndex !== questions.length - 1}
                 >
                   Submit
                 </Button>
@@ -148,7 +158,7 @@ export default function QuizPage({ questions }: { questions: QuestionType[] }) {
       </Row>
       <Modal
         title="Submitted"
-        visible={showModal}
+        open={showModal}
         confirmLoading={confirmLoading}
         onCancel={() => setShowModal(false)}
         footer={[

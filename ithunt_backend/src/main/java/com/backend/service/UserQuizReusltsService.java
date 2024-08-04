@@ -33,4 +33,12 @@ public class UserQuizReusltsService extends ServiceImpl<UserQuizResultsMapper, U
         int completionRate = 100 * (int)completedQuiz / userQuizResults.size();
         return completionRate;
     }
+
+    public UserQuizResults getUserQuizByCourse(Integer userId, Integer courseId){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id",userId);
+        queryWrapper.eq("course_id",courseId);
+        return userQuizResultsMapper.selectOne(queryWrapper);
+    }
+
 }
