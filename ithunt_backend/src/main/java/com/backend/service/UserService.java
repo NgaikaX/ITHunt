@@ -51,6 +51,9 @@ public class UserService extends ServiceImpl<UserMapper,User> {
         if (!user.getPassword().equals(dbUser.getPassword())) {
             throw new ServiceException("Wrong email or password");
         }
+        if (!dbUser.getEnabled()) {
+            throw new ServiceException("Account not activated. Please check your email for verification link.");
+        }
         //create Token
         String token =TokenUtils.createToken(dbUser.getId().toString(),dbUser.getPassword());
         dbUser.setToken(token);
@@ -90,5 +93,6 @@ public class UserService extends ServiceImpl<UserMapper,User> {
         }
 
     }
+
 
 }

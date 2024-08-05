@@ -10,9 +10,21 @@ spring:
         url: jdbc:mysql://${ip}:3306/ithunt_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
     servlet:
         multipart:
-            max-file-size: 20MB
-            max-request-size: 20MB
-
+            max-file-size: 50MB
+            max-request-size: 50MB
+    mail:
+        host: smtp-mail.outlook.com
+        port: 587
+        username: ithuntstudent@outlook.com
+        password: ukouwsuimlcapxnp
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                transport:
+                    protocol: smtp
 mybatis-plus:
     type-aliases-package: com.backend.entity
     mapper-locations: classpath:/mapper/*.xml

@@ -60,7 +60,6 @@
 			<version>2.3.1</version>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- mybatis-plus -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
@@ -68,7 +67,7 @@
 			<version>3.5.3.2</version>
 		</dependency>
 
-		<!-- poi依赖 -->
+		<!-- poi dependency -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
@@ -81,7 +80,7 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
-		<!-- Jackson JSON处理依赖 -->
+		<!-- Jackson dependency -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -95,7 +94,7 @@
 			<artifactId>jackson-annotations</artifactId>
 		</dependency>
 
-		<!-- Hibernate Types 依赖 -->
+		<!-- Hibernate Types dependency -->
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
 			<artifactId>hibernate-types-52</artifactId>
@@ -106,9 +105,17 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>5.6.14.Final</version> <!-- 选择与 Spring Boot 版本兼容的 Hibernate Core 版本 -->
 		</dependency>
-
+		<!-- 邮箱依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<!-- Redis依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

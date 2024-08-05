@@ -19,9 +19,11 @@ export interface UserType {
   role: USER_ROLE;
   status: USER_STATUS;
   password: string;
-  id: number;
-  uploaddate: string;
-  token: string;
+  id?: number;
+  uploaddate?: string;
+  token?: string;
+  verificationToken?: string;
+  enabled?: boolean;
 }
 export interface UserLoginType {
   email: string;

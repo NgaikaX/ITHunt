@@ -18,7 +18,8 @@ public class InterceptorConfig extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor())   // 配置jwt的拦截器规则
                 .addPathPatterns("/**")            // 拦截所有的请求路径
-                .excludePathPatterns("/login");
+                .excludePathPatterns("/login")
+                .excludePathPatterns("/file/download/**");
 
         super.addInterceptors(registry);
     }

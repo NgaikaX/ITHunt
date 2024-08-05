@@ -2,35 +2,25 @@ import { Button, Col, Form, Input, message, Row } from "antd";
 import styles from "./index.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { UserLoginType } from "@/type";
+import {UserType} from "@/type";
 import { useEffect, useState } from "react";
-import { userLogin } from "@/api";
+import { userSignUp} from "@/api";
 import {USER_ROLE} from "@/constants"; // Import your API function
 
 export default function SignUp() {
   const router = useRouter();
   const [userRole, setUserRole] = useState<string>('');
 
-  const handleFinish = async (values: UserLoginType) => {
+  const handleFinish = async (values: UserType) => {
     try {
-      const res = await userLogin(values);
-      const userData = res.data;
-
-      setUserRole(userData.role || '');
-      console.log("userData.role",userData.role);
-      message.success("Log in successfully");
+      values.role = USER_ROLE.STU;
+      await userSignUp(values as UserType);
+      message.success("Registration successful. Check your email for verification link.");
     } catch (error) {
-      message.error("Login failed");
+      message.error("Registration failed");
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    console.log("userRole",userRole);
-    if (userRole) {
-      userRole === USER_ROLE.STU ? router.push("/dashboard") : router.push("/users");
-    }
-  }, [userRole]);
 
   return (
       <div className={styles.classContainer}>

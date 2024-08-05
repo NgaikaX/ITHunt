@@ -21,9 +21,28 @@ public class User {
     private String email;
     private String status;
     private String uploaddate;
+    @TableField("verification_token")
+    private String verificationToken;
+    private Boolean enabled;
 
     @TableField(exist = false)
     private String token;
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 
     public String getToken() {
         return token;

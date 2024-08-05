@@ -26,8 +26,8 @@ export async function userUpdate(params: UserType) {
 export async function userLogin(params: Pick<UserType, "email" | "password">) {
   return request.post("/login", params);
 }
-export async function userLogout() {
-  return request.get("/api/logout");
+export async function userSignUp(params: UserType) {
+  return request.post(`/register`, params);
 }
 /**
 * User Info
