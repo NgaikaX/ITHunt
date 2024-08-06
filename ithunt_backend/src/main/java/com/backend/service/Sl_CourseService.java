@@ -57,25 +57,15 @@ public class Sl_CourseService extends ServiceImpl<Sl_CourseMapper, Sl_Course> {
     }
     public void deleteSlCourseFile(Sl_Course course){
         String coverPath = course.getCover();
-        String videoPath = course.getVideourl();
 
         // convert url to a file path
         String absoluteCoverPath = ROOT_PATH + File.separator + coverPath.substring(coverPath.lastIndexOf("/") + 1);
-        String absoluteVideoPath = ROOT_PATH + File.separator + videoPath.substring(videoPath.lastIndexOf("/") + 1);
 
         //delete cover
         if (StrUtil.isNotBlank(absoluteCoverPath)) {
             File coverFile = new File(absoluteCoverPath);
             if (coverFile.exists()) {
                 coverFile.delete();
-            }
-        }
-
-        //delete video
-        if (StrUtil.isNotBlank(absoluteVideoPath)) {
-            File videoFile = new File(absoluteVideoPath);
-            if (videoFile.exists()) {
-                videoFile.delete();
             }
         }
     }

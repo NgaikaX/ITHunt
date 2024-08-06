@@ -58,13 +58,12 @@ public class FileController {
 
     /**
      * upload a video
-     * */
     @AuthAccess
     @PostMapping("/uploadVideo")
     public Result uploadVideo(@RequestParam("video") MultipartFile file) throws IOException {
         String url = uplpadFile(file);
         return Result.success(url);//file download link
-    }
+    }*/
 
     @AuthAccess
     @GetMapping("/download/{fileName}")
