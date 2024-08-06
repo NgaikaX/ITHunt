@@ -22,7 +22,7 @@ import {
   ReadOutlined,
 } from "@ant-design/icons";
 import Head from "next/head";
-import {getUserInfo, messagesUpdate, sendMessage, userLogout, getMessagesList, messagesDelete} from "@/api";
+import {getUserInfo, messagesUpdate, sendMessage, getMessagesList, messagesDelete} from "@/api";
 import { USER_ROLE } from "@/constants";
 import { MessageType, UserInfoType } from "@/type";
 

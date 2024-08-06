@@ -14,14 +14,16 @@ export default function Home() {
   const handleFinish = async (values: UserLoginType) => {
     try {
       const res = await userLogin(values);
-      const userData = res.data;
-
-      // Save user data to localStorage
-      localStorage.setItem('user', JSON.stringify(userData));
-      // Update userRole state
-      setUserRole(userData.role || '');
-      console.log("userData.role",userData.role);
-      message.success("Log in successfully");
+      if (Number(res.code) === 200) {
+        const userData = res.data;
+        // Save user data to localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+        // Update userRole state
+        setUserRole(userData.role || '');
+        message.success("Log in successfully");
+      } else {
+        message.error(res.msg || "Login failed");
+      }
     } catch (error) {
       message.error("Login failed");
       console.error(error);
@@ -29,7 +31,6 @@ export default function Home() {
   };
 
   useEffect(() => {
-    console.log("userRole",userRole);
     if (userRole) {
       userRole === USER_ROLE.STU ? router.push("/dashboard") : router.push("/users");
     }

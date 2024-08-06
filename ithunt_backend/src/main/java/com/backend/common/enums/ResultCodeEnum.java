@@ -16,7 +16,7 @@ public enum ResultCodeEnum {
 
     SYSTEM_ERROR("500", "system error"),
     USER_EXIST_ERROR("5001", "Email already exists"),
-    USER_NOT_LOGIN("5002", "User is not logged in"),
+    USER_NOT_ACTIVATED("5002", "User is not activated"),
     USER_ACCOUNT_ERROR("5003", "Incorrect email or password"),
     USER_NOT_EXIST_ERROR("5004", "User does not exist"),
     PARAM_PASSWORD_ERROR("5005", "The original password was entered incorrectly."),

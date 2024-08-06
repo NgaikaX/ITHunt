@@ -10,12 +10,13 @@ import com.backend.utils.TokenUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
+
+import static com.backend.common.enums.ResultCodeEnum.USER_ACCOUNT_ERROR;
+import static com.backend.common.enums.ResultCodeEnum.USER_NOT_ACTIVATED;
 
 /**
  * Function:
@@ -46,13 +47,13 @@ public class UserService extends ServiceImpl<UserMapper,User> {
         User dbUser = selectByEmail(user.getEmail());
         if (dbUser == null) {
             // Throw a custom exception
-            throw new ServiceException("Wrong email or password");
+            throw new ServiceException(USER_ACCOUNT_ERROR.code,USER_ACCOUNT_ERROR.msg);
         }
         if (!user.getPassword().equals(dbUser.getPassword())) {
-            throw new ServiceException("Wrong email or password");
+            throw new ServiceException(USER_ACCOUNT_ERROR.code,USER_ACCOUNT_ERROR.msg);
         }
         if (!dbUser.getEnabled()) {
-            throw new ServiceException("Account not activated. Please check your email for verification link.");
+            throw new ServiceException(USER_NOT_ACTIVATED.code, USER_NOT_ACTIVATED.msg);
         }
         //create Token
         String token =TokenUtils.createToken(dbUser.getId().toString(),dbUser.getPassword());
