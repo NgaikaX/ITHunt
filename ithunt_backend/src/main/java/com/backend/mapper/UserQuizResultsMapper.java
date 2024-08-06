@@ -12,7 +12,7 @@ public interface UserQuizResultsMapper extends BaseMapper<UserQuizResults> {
             "VALUES (#{userId}, #{courseId}, #{score}, #{complete}, #{submitTime}, #{coursename}) " +
             "ON DUPLICATE KEY UPDATE " +
             "score = VALUES(score), " +
-            "completed = VALUES(complete), " +
+            "complete = VALUES(complete), " +
             "submit_time = VALUES(submit_time), " +
             "coursename = VALUES(coursename)")
     void UpdateUserQuizResult(@Param("userId") int userId, @Param("courseId") Integer courseId,

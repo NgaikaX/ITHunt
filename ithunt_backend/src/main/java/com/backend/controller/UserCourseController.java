@@ -44,5 +44,11 @@ public class UserCourseController {
         userCourseService.updateComplete(userCourse);
         return Result.success();
     }
+    @AuthAccess
+    @GetMapping("getUserCourseComplete")
+    public Result getUserCourseComplete(@RequestParam("userId") Integer userId,@RequestParam("courseId") Integer courseId){
+        UserCourse userCourse = userCourseService.getCompletion(userId,courseId);
+        return Result.success(userCourse);
+    }
 
 }

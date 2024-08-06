@@ -53,6 +53,9 @@ export async function updateCourseComplete({ courseId, userId }) {
 export async function getCourseCompletion(user_id: number) {
   return request.get("/userCourse/courseCompletion",{params: { user_id } });
 }
+export async function getUserCourseComplete(userId, courseId ) {
+  return request.get("/userCourse/getUserCourseComplete",{params: { userId, courseId }});
+}
 /**
 * User Quiz
 * */

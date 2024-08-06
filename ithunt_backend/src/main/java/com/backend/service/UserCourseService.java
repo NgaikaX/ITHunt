@@ -1,5 +1,6 @@
 package com.backend.service;
 
+import com.backend.entity.Sl_Course;
 import com.backend.entity.UserCourse;
 import com.backend.mapper.UserCourseMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -42,4 +43,11 @@ public class UserCourseService extends ServiceImpl<UserCourseMapper, UserCourse>
         userCourseMapper.updateById(needUpdate);
     }
 
+    public UserCourse getCompletion(Integer userId, Integer courseId){
+        QueryWrapper<UserCourse> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("course_id", courseId);
+        UserCourse userCourse = userCourseMapper.selectOne(queryWrapper);
+        return userCourse;
+    }
 }
