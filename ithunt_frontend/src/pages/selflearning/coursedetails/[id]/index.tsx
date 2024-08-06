@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import React, {useEffect, useRef, useState} from "react";
-import {getSlCourseDetails, getUserQuizByCourse, updateCourseComplete} from "@/api";
+import React, {useEffect, useState} from "react";
+import {getSlCourseDetails, getUserCourseComplete, getUserQuizByCourse, updateCourseComplete} from "@/api";
 import { Sl_CourseType } from "@/type";
 import { Button, Card, Col, Row, Space } from "antd";
 import styles from "./index.module.css";
@@ -12,7 +12,6 @@ export default function Sl_CourseDetail() {
   const router = useRouter();
   const { id } = router.query;
   const [course, setCourse] = useState<Sl_CourseType | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const[user_id, setUserID] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState<boolean | null>(null);
   const [courseCompleted, setCourseCompleted] = useState<boolean>(false);
@@ -25,6 +24,7 @@ export default function Sl_CourseDetail() {
   useEffect(() => {
     if (id) {
       getSlCourseDetails(id as number).then((res) => {
+        const videoUrl = res.data.videourl;
         setCourse(res.data);
       });
     }
@@ -33,33 +33,16 @@ export default function Sl_CourseDetail() {
   useEffect(() => {
     if (id && user_id !== null) {
       getUserQuizByCourse(user_id,id as number).then((res) => {
-        if(res.data !=null){
-          console.log("res",res)
+        if(res.data){
           setQuizCompleted(res.data.complete);
         }
       });
-    }
-  }, [id, user_id]);
-
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    if (videoElement) {
-      const handleVideoEnded = async() => {
-        if (id && user_id !== null) {
-          const values={
-            courseId:id as number,
-            userId:user_id as number,
-          }
-          const response = await updateCourseComplete(values);
-          setCourseCompleted(true);
+      getUserCourseComplete(user_id,id as number).then((res) => {
+        if(res.data){
+          console.log("usercourse",res)
+          setCourseCompleted(res.data.complete);
         }
-      };
-      videoElement.addEventListener("ended", handleVideoEnded);
-
-      // clear the listener
-      return () => {
-        videoElement.removeEventListener("ended", handleVideoEnded);
-      };
+      })
     }
   }, [id, user_id]);
 
@@ -86,16 +69,40 @@ export default function Sl_CourseDetail() {
     }
   };
 
+  const renderVideo = (url: string) => {
+    console.log("Video URL:", url);
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      const videoId = url.split('v=')[1] || url.split('/').pop();
+      return (
+          <iframe
+              src={`https://www.youtube.com/embed/${videoId}`}
+              className={styles.cardWrap}
+              width="640"
+              height="360"
+              style={{ border: 0 }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+          />
+      );
+    } else if (url.endsWith(".mp4")) {
+      return (
+          <video
+              src={url}
+              className={styles.cardWrap}
+              width="640"
+              height="360"
+              controls
+          />
+      );
+    } else {
+      return <div>Unsupported video format</div>;
+    }
+  };
+
   return (
     <Row gutter={24} className={styles.outsideWrap}>
       <Col span={17}>
-        {course.videourl?
-            (<video
-                src={course.videourl}
-                controls
-                className={styles.cardWrap}
-                ref={videoRef}
-            />) :(null)}
+        {course.videourl ? renderVideo(course.videourl) : null}
         <Card className={styles.cardWrap}>
           <h1>{course.coursename}</h1>
           <br />

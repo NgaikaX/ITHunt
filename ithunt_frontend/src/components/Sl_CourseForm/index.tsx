@@ -25,8 +25,6 @@ import dynamic from "next/dynamic";
 const { TextArea } = Input;
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
-type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-
 const getBase64 = (img, callback: (url: string) => void) => {
   const reader = new FileReader();
   reader.addEventListener("load", () => callback(reader.result as string));
@@ -57,18 +55,13 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
-  const [videoUrl, setVideoUrl] = useState<string>();
   const [fileList, setFileList] = useState<File[]>([]);
-  const [videoList, setVideoList] = useState<File[]>([]);
   const [description, setDescription] = useState<string>("");
   useEffect(() => {
     if (editData.id) {
       form.setFieldsValue(editData);
       if (editData.cover) {
         setImageUrl(editData.cover); // Assuming editData.cover is base64 or URL of the image
-      }
-      if (editData.videourl) {
-        setVideoUrl(editData.videourl); // Assuming editData.video is URL of the video
       }
       if (editData.description) {
         setDescription(editData.description); // 设置编辑时的描述内容
@@ -82,20 +75,13 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
     values.description = description;
     setLoading(true);
     let coverUrl: string;
-    let videoUrl: string;
     const formData = new FormData();
     if (fileList.length > 0) {
       formData.append("cover", fileList[0]);
       const uploadData = await slCourseCoverUpload(formData as FormData);
-      coverUrl = uploadData.data; // 根据返回的数据结构获取URL
-    }
-    if (videoList.length > 0){
-      formData.append("video", videoList[0]);
-      const uploadVideo = await slCourseVideoUpload(formData as FormData);
-      videoUrl = uploadVideo.data;
+      coverUrl = uploadData.data;
     }
     values.cover = coverUrl;
-    values.videourl=videoUrl;
 
     if (editData.id) {
       await slCourseUpdate({ ...editData, ...values });
@@ -106,6 +92,8 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
     router.push("/selflearning/courselist");
     setLoading(false);
   };
+
+
   const handleCancel = () => {
     router.push("/selflearning/courselist");
   };
@@ -128,24 +116,6 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
       message.error("Upload failed.");
     }
   };
-
-  const handleVideoChange = (info: any) => {
-    console.log(info);
-
-    if (info.file.status === "uploading") {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      setVideoList([info.file.originFileObj]);
-      const reader = new FileReader();
-      reader.onload = () => setVideoUrl(reader.result as string);
-      reader.readAsDataURL(info.file.originFileObj);
-      setLoading(false);
-    }
-  };
-
   const uploadButton = (
     <button className={styles.uploadbtn} type="button">
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -171,25 +141,8 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
         >
           <Input placeholder="Enter a course name" />
         </Form.Item>
-
-        <Form.Item label="Video" name="video">
-          <Space direction="vertical" style={{ width: "100%" }} size="large">
-            {videoUrl ? (
-              <video
-                src={videoUrl}
-                controls
-                style={{ width: "100%", height: "auto" }}
-              />
-            ) : null}
-            <Upload
-              listType="picture"
-              maxCount={1}
-              beforeUpload={beforeUploadVideo}
-              onChange={handleVideoChange}
-            >
-              <Button icon={<UploadOutlined />}>Upload (Max: 1)</Button>
-            </Upload>
-          </Space>
+        <Form.Item label="Video" name="videourl">
+          <Input placeholder="Enter a YouTube/mp4 video url"></Input>
         </Form.Item>
         <Form.Item label="Cover" name="cover" rules={[{ required: true }]}>
           <Space direction="vertical" style={{ width: "100%" }} size="large">
