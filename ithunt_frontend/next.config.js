@@ -19,11 +19,6 @@ const nextConfig = {
       {
         source: "/api/:path*",
         destination: "http://localhost:9090/api/:path*",
-        //source: "/:path*",
-        //"/api/:path*",
-        //destination:
-          //"http://127.0.0.1:4523/m1/4782268-4436149-default/api/:path*",
-         // "http://localhost:9090/:path*",
       },
     ];
   },
