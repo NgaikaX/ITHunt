@@ -18,3 +18,11 @@ export interface QuestionType {
   uploaddate:string;
   options: string[];
 }
+
+export interface UserQuestionType {
+  id: number;
+  course_id: number;
+  coursename: string;
+  userAnswer?: string;
+  correct:boolean;
+}
