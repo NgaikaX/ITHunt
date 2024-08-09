@@ -1,14 +1,15 @@
 import { getQuizQuestions } from "@/api";
 import QuizForm from "@/components/QuizForm";
-import { QuestionType } from "@/type/question";
+import { UserQuestionType} from "@/type/question";
 import { Alert, Spin } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
-
-  const [questions, setQuestions] = useState<QuestionType[]>([]);
+  const id = router.query.id;
+  const courseIdNumber = typeof id === 'string' ? parseInt(id) : undefined;
+  const [questions, setQuestions] = useState<UserQuestionType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +17,7 @@ export default function Home() {
     const fetchQuestions = async () => {
       if (router.query.id) {
         try {
-          const res = await getQuizQuestions(router.query.id as number);
+          const res = await getQuizQuestions(courseIdNumber);
           setQuestions(res.data);
         } catch (error) {
           console.error("Error fetching questions:", error);

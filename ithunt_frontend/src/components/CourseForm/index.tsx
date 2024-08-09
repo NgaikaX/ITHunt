@@ -18,13 +18,7 @@ import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import {formatTimestamp} from "@/utils";
 
 const { TextArea } = Input;
-type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-const getBase64 = (img, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
-const beforeUpload = (file) => {
+const beforeUpload = (file:any) => {
   console.log(file)
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
   if (!isJpgOrPng) {
@@ -58,12 +52,12 @@ export default function CourseForm( {editData={},}:{editData?:Partial<CourseType
   const handleFinish = async (values: CourseType) => {
     values.uploaddate = formatTimestamp(Date.now());  // Set current date and time
     setLoading(true);
-      let coverUrl: string;
-      let uploadDate: string;
+    let coverUrl: string = '';
       if (fileList.length > 0) {
         const file = fileList[0];
         const formData = new FormData();
         formData.append("cover", fileList[0]);
+
         const uploadData = await coverUpload(formData as FormData);
         console.log("uploadData", uploadData); // 打印上传响应数据
         coverUrl = uploadData.data; // 根据返回的数据结构获取URL

@@ -8,7 +8,7 @@ import {
 export interface UserQueryType {
   username?: string;
   role?: USER_ROLE;
-  pageNum?: number;
+  current?: number;
   pageSize?: number;
   all?: boolean;
 }
@@ -38,18 +38,28 @@ export interface UserInfoType {
 }
 
 export interface UserCourseType {
-  id: string;
+  id?: string;
   complete: string;
   coursename: string;
-  userid: string;
+  userId: string;
   finishdate: string;
+  courseId:number;
 }
+export interface UpdateCourseCompleteParams {
+  courseId: number;
+  userId: number;
+}
+export interface getCourseCompleteParams {
+  userId: number;
+  courseId: number;
+}
+
 export interface UserQuizType {
   id: string;
   complete: string;
   coursename: string;
   userid: string;
-  finishdate: string;
+  submitTime: string;
   score: string;
 }
 

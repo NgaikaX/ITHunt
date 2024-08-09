@@ -2,14 +2,14 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {feedbackAdd, getCourseDetails, getFeedback, getFeedbackList} from "@/api";
 import { CourseType, FeedbackType } from "@/type";
-import { Button, Card, Input, List, Modal, message } from "antd";
+import { Button, Card, Image, List, Modal, message } from "antd";
 import styles from "./index.module.css";
 import TextArea from "antd/es/input/TextArea";
 import {formatTimestamp} from "@/utils";
 
 export default function CourseDetail() {
   const router = useRouter();
-  const { id } = router.query;
+  const id  = router.query.id as string;
   const [course, setCourse] = useState<CourseType | null>(null);
   const { coursename } = router.query;
   const [feedbackList, setFeedbackList] = useState<FeedbackType[]>([]);
@@ -26,12 +26,17 @@ export default function CourseDetail() {
           setUserID(userData.id||null);
       }
     if (id) {
-      getCourseDetails(id as number).then((res) => {
-        setCourse(res.data);
-      });
-      getFeedback(id as number).then((fb) => {
-        setFeedbackList(fb.data);
-      });
+        const numericId = parseInt(id, 10);
+        if (!isNaN(numericId)) {
+            getCourseDetails(numericId).then((res) => {
+                setCourse(res.data);
+            });
+            getFeedback(numericId).then((fb) => {
+                setFeedbackList(fb.data);
+            });
+        } else {
+            console.error('Invalid id:', id);
+        }
     }
   }, [id]);
 
@@ -64,7 +69,7 @@ export default function CourseDetail() {
   return (
     <div className={styles.outsideWrap}>
       <div className={styles.coverCon}>
-        <img src={course.cover} className={styles.cardWrap} />
+        <Image src={course.cover} className={styles.cardWrap} />
       </div>
 
       <Card className={styles.descriptionCard}>

@@ -1,9 +1,9 @@
-import { Button, Col, Form, Input, message, Row } from "antd";
+import { Button, Col, Form, Input,Image, message, Row } from "antd";
 import styles from "./index.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {UserType} from "@/type";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { userSignUp} from "@/api";
 import {USER_ROLE} from "@/constants"; // Import your API function
 
@@ -43,12 +43,12 @@ export default function SignUp() {
                 >
                   <Form.Item name="email" rules={[
                     { required: true, message: "Please input your email!" },
-                    {
+                    {/*
                       validator: (_, value) =>
                           value && value.endsWith("@student.gla.ac.uk")
                               ? Promise.resolve()
                               : Promise.reject("Email must end with @student.gla.ac.uk"),
-                    },
+                    */},
                   ]}>
                     <Input placeholder="Email" />
                   </Form.Item>
@@ -77,7 +77,7 @@ export default function SignUp() {
           </Col>
           <Col span={14}>
             <div>
-              <img alt=" " src="/assets/login02.png" className={styles.picture} />
+              <Image alt=" " src="/assets/login02.png" className={styles.picture} />
               <p className={styles.attribute}>Illustration designed by Freepik</p>
             </div>
           </Col>

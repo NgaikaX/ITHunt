@@ -98,10 +98,10 @@ export default function Home() {
   const handleCourseAdd = () => {
     router.push("/selflearning/addcourse");
   };
-  const handleCourseEdit = (id: string) => {
+  const handleCourseEdit = (id: number) => {
     router.push(`/selflearning/editcourse/${id}`);
   };
-  const handleCourseDelete = async (id: string) => {
+  const handleCourseDelete = async (id: number) => {
     //console.log(id);
     await slCourseDelete(id);
     message.success("Delete Sucessfully");

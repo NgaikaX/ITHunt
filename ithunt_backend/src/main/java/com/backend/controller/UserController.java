@@ -79,7 +79,7 @@ public class UserController {
      * */
     @AuthAccess
     @GetMapping ("/selectByPage")
-    public Result selectByPage( @RequestParam(required = false) String username, @RequestParam(required = false) String role,@RequestParam Integer pageNum,@RequestParam Integer pageSize){
+    public Result selectByPage( @RequestParam(required = false) String username, @RequestParam(required = false) String role,@RequestParam Integer current,@RequestParam Integer pageSize){
         QueryWrapper<User> queryWrapper = new QueryWrapper<User>().orderByDesc("id");
         if (StrUtil.isNotBlank(username)) {
             queryWrapper.eq("username", username);
@@ -88,7 +88,7 @@ public class UserController {
             queryWrapper.eq("role", role);
         }
 
-        Page<User> page = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
+        Page<User> page = userService.page(new Page<>(current, pageSize), queryWrapper);
         return Result.success(page);
     }
 

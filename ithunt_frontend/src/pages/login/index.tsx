@@ -1,9 +1,9 @@
-import { Button, Col, Form, Input, message, Row } from "antd";
+import { Button, Col, Form, Input, message, Row, Image } from "antd";
 import styles from "./index.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { UserLoginType } from "@/type";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { userLogin } from "@/api";
 import {USER_ROLE} from "@/constants"; // Import your API function
 
@@ -80,7 +80,7 @@ export default function Home() {
           </Col>
           <Col span={14}>
             <div>
-              <img alt=" " src="/assets/login02.png" className={styles.picture} />
+              <Image alt=" " src="/assets/login02.png" className={styles.picture} />
               <p className={styles.attribute}>Illustration designed by Freepik</p>
             </div>
           </Col>

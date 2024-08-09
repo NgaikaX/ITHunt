@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card } from "antd";
+import { Card,Image } from "antd";
 import {getAllSl_CourseList} from "@/api";
 import { Sl_CourseType } from "@/type";
 import styles from "./index.module.css";
@@ -31,11 +31,11 @@ export default function Home() {
           hoverable
           className={styles.cardtype}
           cover={
-            <img alt="example" src={card.cover} className={styles.covertype} />
+            <Image alt="example" src={card.cover} height={220}/>
           }
           onClick={() => handleClick(card.id as string)}
         >
-          <Meta title={card.coursename} description={card.description} />
+          <Meta title={card.coursename} description={card.uploaddate} />
         </Card>
       );
     }

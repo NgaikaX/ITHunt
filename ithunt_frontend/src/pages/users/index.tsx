@@ -9,7 +9,6 @@ import {
   Table,
   TablePaginationConfig,
   Tag,
-  Tooltip,
   message,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -65,7 +64,7 @@ export default function Home() {
   const Option = Select.Option;
   const [form] = Form.useForm();
   const [pagination, setPagination] = useState<TablePaginationConfig>({
-    pageNum: 1,
+    current: 1,
     pageSize: 20,
     showSizeChanger: true,
     total: 0,
@@ -74,7 +73,7 @@ export default function Home() {
   async function fetchData(values?: UserQueryType) {
     const res = await getUserList({
       ...values,
-      pageNum: pagination.pageNum,
+      current: pagination.current,
       pageSize: pagination.pageSize});
     console.log("%c[res.data]-21", res);
     setData(res.data.records);
@@ -92,7 +91,7 @@ export default function Home() {
     setPagination(pagination);
     const query = form.getFieldsValue();
     getUserList({
-      pageNum: pagination.current,
+      current: pagination.current,
       pageSize: pagination.pageSize,
       ...query,
     });

@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   Form,
   Input,
   Radio,
@@ -10,7 +9,7 @@ import {
 } from "antd";
 
 import { useRouter } from "next/router";
-import {getQuestionCount, getSl_CourseByName, questionAdd, questionUpdate} from "@/api";
+import {questionAdd, questionUpdate} from "@/api";
 import { QUESTION_TYPE } from "@/constants";
 import { useEffect, useState } from "react";
 import { QuestionType } from "@/type/question";

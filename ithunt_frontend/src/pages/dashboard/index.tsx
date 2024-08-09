@@ -104,7 +104,7 @@ export default function Dashboard() {
   const[receiver_id, setReceiverID] = useState(null);
 
   const handleFinish = async (values: UserInfoType) => {
-    values.userId = user_id;
+    values.userId = user_id as number;
     values.username = userName;
     await userInfoAdd({...values});//add or update user info
     message.success("Information Added Successfully");
@@ -119,23 +119,24 @@ export default function Dashboard() {
     //get user's course list
     try {
       //get coursePercent
-      const cPercent = await getCourseCompletion(user_id);
+      const cPercent = await getCourseCompletion(user_id as number);
       setCoursePercent(cPercent.data);
       //get user course list
-      const courseres = await getUserCourseList(user_id);
+      const courseres = await getUserCourseList(user_id as number);
       const course = courseres.data;
+      console.log("userCourse",course);
       setCourse(course || []);
 
       //get quizPercent
-      const qPercent = await getQuizCompletion(user_id);
+      const qPercent = await getQuizCompletion(user_id as number);
       setQuizPercent(qPercent.data);
       //get user's quiz list
-      const quizres = await getUserQuizList(user_id);
+      const quizres = await getUserQuizList(user_id as number);
       const quiz = quizres.data;
       setQuiz(quiz || []);
 
       //get User info
-      const infoRes = await getUserInfo(user_id);
+      const infoRes = await getUserInfo(user_id as number);
       console.log("User Info Response2:", infoRes);  // Log the response
       const userInfoData = infoRes.data;
       setUserInfo(userInfoData);
@@ -149,7 +150,7 @@ export default function Dashboard() {
       }
 
       //get study partner list
-      const res = await getUserInfoList(user_id);
+      const res = await getUserInfoList(user_id as number);
       const { data } = res; // Correctly access data here
       console.log("data",data);
       setList(data || []); // Ensure list is an array
@@ -187,6 +188,7 @@ export default function Dashboard() {
         senderName:userName,
         recieverId:receiver_id,
         contact:userInfo.contact,
+        read: false,
         interest:userInfo.interest,
         language:userInfo.language
       };
@@ -207,17 +209,9 @@ export default function Dashboard() {
       itemLayout="horizontal"
       dataSource={course}
       renderItem={(item) => {
-        let completeString = "";
-        {
-          item.complete === true
-            ? (completeString = "completed")
-            : (completeString = "uncompleted");
-        }
+        const completeString = item.complete ? "completed" : "uncompleted";
         const description = `${completeString}`;
-        let btn = "";
-        {
-          item.complete === true ? (btn = "Review") : (btn = "Learn");
-        }
+        const btn = item.complete ? "Review" : "Learn";
         return (
           <List.Item
             actions={[
@@ -252,17 +246,9 @@ export default function Dashboard() {
       itemLayout="horizontal"
       dataSource={quiz}
       renderItem={(item) => {
-        let completeString = "";
-        {
-          item.complete === true
-            ? (completeString = "completed")
-            : (completeString = "uncompleted");
-        }
+        const completeString = item.complete ? "completed" : "uncompleted";
         const description = `${completeString} | Score: ${item.score} | ${item.submitTime}`;
-        let btn = "";
-        {
-          item.complete === true ? (btn = "Review") : (btn = "Attend");
-        }
+        const btn = item.complete ? "Review" : "Attend";
         return (
           <List.Item
             actions={[

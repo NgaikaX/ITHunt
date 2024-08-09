@@ -5,10 +5,10 @@ import { useRouter } from "next/router";
 import Question from "../Question";
 import styles from "./index.module.css";
 import {submitQuiz} from "@/api";
-import {SubmitQuizType} from "@/type";
+import {SubmitQuizType, UserQuestionType} from "@/type";
 import {formatTimestamp} from "@/utils";
 
-export default function QuizPage({ questions, isReviewMode = false }: { questions, isReviewMode?: boolean }) {
+export default function QuizPage({ questions=[], isReviewMode = false }: { questions:UserQuestionType[]; isReviewMode?: boolean }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function QuizPage({ questions, isReviewMode = false }: { question
   const [showModal, setShowModal] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [userid, setUserId] = useState<number>(null);
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex] || {};
   const id = router.query.id;
 
   // 调试输出 questions

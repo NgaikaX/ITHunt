@@ -1,7 +1,7 @@
 import request from "../utils/request";
 import {
-  MessageType,
-  SubmitQuizType,
+  getCourseCompleteParams,
+  SubmitQuizType, UpdateCourseCompleteParams,
   UserInfoType,
   UserQueryType,
   UserType,
@@ -47,13 +47,13 @@ export async function getUserInfo(user_id: number) {
 export async function getUserCourseList(user_id: number) {
   return request.get("/userCourse/UserCourseList",{params: { user_id } });
 }
-export async function updateCourseComplete({ courseId, userId }) {
+export async function updateCourseComplete({ courseId, userId }: UpdateCourseCompleteParams) {
   return request.put("/userCourse/updateComplete",{ courseId, userId });
 }
 export async function getCourseCompletion(user_id: number) {
   return request.get("/userCourse/courseCompletion",{params: { user_id } });
 }
-export async function getUserCourseComplete(userId, courseId ) {
+export async function getUserCourseComplete({userId, courseId}: getCourseCompleteParams ) {
   return request.get("/userCourse/getUserCourseComplete",{params: { userId, courseId }});
 }
 /**
@@ -62,7 +62,7 @@ export async function getUserCourseComplete(userId, courseId ) {
 export async function getUserQuizList(user_id: number) {
   return request.get("/userQuiz/userQuizList",{params: { user_id } });
 }
-export async function getUserQuizByCourse(userId, courseId ) {
+export async function getUserQuizByCourse({userId, courseId}:getCourseCompleteParams ) {
   return request.get("/userQuiz/getUserQuizByCourse",{params: { userId, courseId }});
 }
 export async function submitQuiz(params: SubmitQuizType[]) {
@@ -71,7 +71,7 @@ export async function submitQuiz(params: SubmitQuizType[]) {
 export async function getQuizCompletion(user_id: number) {
   return request.get("/userQuiz/quizCompletion",{params: { user_id } });
 }
-export async function getUserQuestionAnswer(userId, courseId ) {
+export async function getUserQuestionAnswer({userId, courseId}:getCourseCompleteParams ) {
   return request.get("/userQuestion/getUserQuestionAnswer",{params: { userId, courseId }});
 }
 

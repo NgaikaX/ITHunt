@@ -39,7 +39,7 @@ export default function Question({
                   value={answer}
               >
                 <Space direction="vertical">
-                    {question.options.map((option, index) => (
+                    {question.options.map((option:string, index:number) => (
                         <Radio value={index.toString()} key={index}>
                             {String.fromCharCode(65 + index)}. {option}
                         </Radio>

@@ -7,6 +7,8 @@ export interface MessageType {
   contact: string;
   interest: INTEREST;
   language: LANGUAGE;
+  read:boolean;
+  id?:number;
 }
 
 export interface MessagesQueryType {

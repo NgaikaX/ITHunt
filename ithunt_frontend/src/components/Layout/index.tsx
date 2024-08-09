@@ -218,6 +218,7 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         senderName: userName,
         recieverId: receiverId!,
         contact: userInfo!.contact,
+        read: false,
         interest: userInfo!.interest,
         language: userInfo!.language,
       };
@@ -315,7 +316,7 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                   setSelectedMessage(context);
                                   setShowModal(true);
                                   setReceiverID(item.senderId);
-                                  markMessageAsRead(item.id);
+                                  markMessageAsRead(item.id as number);
                                 }}
                             >
                               More
@@ -324,7 +325,7 @@ const Layout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                 key="delete"
                                 type="link"
                                 danger
-                                onClick={() => handleDeleteMessage(item.id)}
+                                onClick={() => handleDeleteMessage(item.id as number)}
                             >
                               Delete
                             </Button>,

@@ -84,6 +84,8 @@ public class GlossaryController {
     /**
      * get glossary details by id
      * */
+
+    @AuthAccess
     @GetMapping ("/details/{id}")
     public Result details(@PathVariable Integer id) {
         Glossary glossary = glossaryService.getById(id);

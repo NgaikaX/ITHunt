@@ -5,7 +5,6 @@ import {
   Image,
   Input,
   Row,
-  Select,
   Space,
   Table,
   TablePaginationConfig,
