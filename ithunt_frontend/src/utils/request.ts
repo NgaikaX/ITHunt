@@ -31,7 +31,7 @@ export const CreateAxiosInstance = (
     config?: AxiosRequestConfig
 ): AxiosInstanceType => {
     const instance = axios.create({
-        baseURL: "http://localhost:9090/",
+        baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:9090/",
         timeout: 30000,
         headers: {
             'Content-Type': 'application/json'
