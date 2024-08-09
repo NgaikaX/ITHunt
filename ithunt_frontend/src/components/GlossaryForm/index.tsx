@@ -1,16 +1,27 @@
-import React, {useEffect, useState} from "react";
-import { Button, Form, Image, Input, Space, message } from "antd";
+import React, {useEffect} from "react";
+import { Button, Form,  Input, Space, message } from "antd";
 import { useRouter } from "next/router";
-import ReactQuill from "react-quill";
+//import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styles from "./index.module.css";
 import {glossaryUpdate, vocabularyAdd} from "@/api/glossary";
 import { VocabularyType } from "@/type/glossary";
 import {formatTimestamp} from "@/utils";
+import dynamic from "next/dynamic";
 
-export default function GlossaryForm({editData={},}:{editData?:Partial<VocabularyType>}) {
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
+
+// 定义组件属性类型
+interface GlossaryFormProps {
+  editData?: Partial<VocabularyType>;
+}
+
+export default function GlossaryForm({ editData = {} }: GlossaryFormProps) {
   const [form] = Form.useForm();
   const router = useRouter();
+
+
   const handleFinish = async (values: VocabularyType) => {
     values.uploaddate = formatTimestamp(Date.now());
     if (editData.id) {
@@ -58,6 +69,7 @@ export default function GlossaryForm({editData={},}:{editData?:Partial<Vocabular
             placeholder="Enter the content"
           />
         </Form.Item>
+
         <Form.Item label=" " colon={false}>
           <Space>
             <Button type="primary" htmlType="submit">

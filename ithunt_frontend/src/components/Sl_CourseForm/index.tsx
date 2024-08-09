@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Form,
-  GetProp,
   Input,
   Space,
   Upload,
-  UploadProps,
+  Image,
   message,
 } from "antd";
 import {Sl_CourseType, VocabularyType} from "@/type";
@@ -14,22 +13,16 @@ import { useRouter } from "next/router";
 import {
   LoadingOutlined,
   PlusOutlined,
-  UploadOutlined,
 } from "@ant-design/icons";
-import {coverUpload, slCourseAdd, slCourseCoverUpload, slCourseUpdate, slCourseVideoUpload} from "@/api";
+import { slCourseAdd, slCourseCoverUpload, slCourseUpdate, slCourseVideoUpload} from "@/api";
 import styles from "./index.module.css";
 import {formatTimestamp} from "@/utils";
 import 'react-quill/dist/quill.snow.css';
 import dynamic from "next/dynamic";
 
-const { TextArea } = Input;
+
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
-const getBase64 = (img, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
 const beforeUploadImg = (file) => {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
   if (!isJpgOrPng) {
@@ -156,7 +149,7 @@ export default function CourseForm({editData={},}:{editData?:Partial<Sl_CourseTy
               onChange={handleImgChange}
             >
               {imageUrl ? (
-                <img src={imageUrl} alt="cover" className={styles.cover} />
+                <Image src={imageUrl} alt="cover" className={styles.cover} />
               ) : (
                 uploadButton
               )}

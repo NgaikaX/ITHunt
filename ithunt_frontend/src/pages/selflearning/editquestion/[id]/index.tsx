@@ -8,14 +8,12 @@ export default function Home() {
   const id = router.query.id;
   const [data, setData] = useState();
 
+  const questionIdNumber = typeof id === 'string' ? parseInt(id) : undefined;
+
   useEffect(() => {
     if (id) {
-      questionDetails(id as number).then((res) => {
+      questionDetails(questionIdNumber).then((res) => {
         setData(res.data);
-        /*console.log(
-          "%c[res]-21",
-          res
-        );*/
       });
     }
   }, [id]);

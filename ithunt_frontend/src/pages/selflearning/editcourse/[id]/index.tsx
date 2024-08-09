@@ -8,9 +8,10 @@ export default function Home() {
   const id = router.query.id;
   const [data, setData] = useState();
 
+  const courseIdNumber = typeof id === 'string' ? parseInt(id) : undefined;
   useEffect(() => {
     if (id) {
-      getSlCourseDetails(id as string).then((res) => {
+      getSlCourseDetails(courseIdNumber).then((res) => {
         setData(res.data);
         //console.log(%c[res]-21",res);
       });

@@ -1,20 +1,34 @@
 import { useRouter } from "next/router";
 import React, {useEffect, useState} from "react";
 import {getSlCourseDetails, getUserCourseComplete, getUserQuizByCourse, updateCourseComplete} from "@/api";
-import { Sl_CourseType } from "@/type";
+import {getCourseCompleteParams, Sl_CourseType} from "@/type";
 import { Button, Card, Col, Row, Space } from "antd";
 import styles from "./index.module.css";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.bubble.css";
+import dynamic from "next/dynamic";
 
-export default function Sl_CourseDetail() {
+//动态导入 ReactQuill 并禁用服务器端渲染
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
+
+
+export default function Sl_CourseDetail({userId, courseId}: getCourseCompleteParams) {
   const router = useRouter();
   const { id } = router.query;
   const [course, setCourse] = useState<Sl_CourseType | null>(null);
-  const[user_id, setUserID] = useState(null);
+  const[user_id, setUserID] = useState<number>(null);
   const [quizCompleted, setQuizCompleted] = useState<boolean | null>(null);
   const [courseCompleted, setCourseCompleted] = useState<boolean>(false);
+
+// Convert id to number safely
+  const courseIdNumber = typeof id === 'string' ? parseInt(id) : undefined;
+
+  // Construct the courseParams object
+  const courseParams = {
+    userId: user_id,
+    courseId: courseIdNumber,
+  };
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
@@ -23,7 +37,7 @@ export default function Sl_CourseDetail() {
 
   useEffect(() => {
     if (id) {
-      getSlCourseDetails(id as number).then((res) => {
+      getSlCourseDetails(courseIdNumber).then((res) => {
         const videoUrl = res.data.videourl;
         setCourse(res.data);
       });
@@ -32,12 +46,12 @@ export default function Sl_CourseDetail() {
 
   useEffect(() => {
     if (id && user_id !== null) {
-      getUserQuizByCourse(user_id,id as number).then((res) => {
+      getUserQuizByCourse(courseParams).then((res) => {
         if(res.data){
           setQuizCompleted(res.data.complete);
         }
       });
-      getUserCourseComplete(user_id,id as number).then((res) => {
+      getUserCourseComplete(courseParams).then((res) => {
         if(res.data){
           console.log("usercourse",res)
           setCourseCompleted(res.data.complete);
@@ -49,7 +63,7 @@ export default function Sl_CourseDetail() {
   const handleCompleteCourse = async () => {
     if (id && user_id !== null) {
       const values = {
-        courseId: id as number,
+        courseId: courseIdNumber,
         userId: user_id as number,
       };
       await updateCourseComplete(values);
